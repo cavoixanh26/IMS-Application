@@ -42,7 +42,7 @@ namespace IMS.BusinessService.Systems
             }
             if (request.IssueSettingId != null)
             {
-                issueQuery = issueQuery.Where(x => x.IssueSettingId == request.IssueSettingId).ToList()
+                issueQuery = issueQuery.Where(x => x.IssueSettingId == request.IssueSettingId).ToList();
             }
             if (request.MilestoneId != null)
             {

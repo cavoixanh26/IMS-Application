@@ -15,20 +15,22 @@ namespace IMS.Domain.Contents
         public string Name { get; set; }
         public string? Description { get; set; }
     
+        // teacher
         public Guid? AssigneeId { get; set; }
-
-        public int SubjectId { get; set; }
-     
-        public int SettingId { get; set; }
 
         [ForeignKey(nameof(AssigneeId))]
         public virtual AppUser? Assignee { get; set; }
 
-        [ForeignKey(nameof(SettingId))]
-        public virtual Setting? Setting { get; set; }
-
+        public int SubjectId { get; set; }
+     
         [ForeignKey(nameof(SubjectId))]
         public virtual Subject? Subject { get; set; }
+
+        // semester 
+        public int SettingId { get; set; }
+
+        [ForeignKey(nameof(SettingId))]
+        public virtual Setting? Setting { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<ClassStudent>? ClassStudents { get; set; }

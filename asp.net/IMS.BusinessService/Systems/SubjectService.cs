@@ -26,7 +26,6 @@ namespace IMS.BusinessService.Systems
         public async Task<SubjectDto> GetBySubjectByIdAsync(int subjectId)
         {
             var subject = await context.Subjects
-            .Include(x => x.Assignments)
             .Include(x => x.Classes)
             .Include(x => x.IssueSettings)
             .Include(x => x.SubjectUsers)
@@ -39,7 +38,6 @@ namespace IMS.BusinessService.Systems
         public async Task<SubjectReponse> GetSubjectAllAsync(SubjectRequest request)
         {
             var subjectQuery = await context.Subjects
-                .Include(x => x.Assignments)
                 .Include(x => x.Classes)
                 .Include(x => x.IssueSettings)
                 .Include(x => x.SubjectUsers)

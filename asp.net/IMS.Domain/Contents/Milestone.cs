@@ -1,11 +1,6 @@
 ﻿using IMS.Domain.Abstracts;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace IMS.Domain.Contents
 {
@@ -24,7 +19,7 @@ namespace IMS.Domain.Contents
         [JsonIgnore]
         public virtual Class? Class { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Issues>? Issues { get; set; } 
+        public virtual ICollection<Issue>? Issues { get; set; } 
 
     }
 }
