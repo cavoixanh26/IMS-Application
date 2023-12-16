@@ -19,8 +19,6 @@ namespace IMS.Domain.Contents
         [ForeignKey(nameof(ManagerId))]
         public virtual AppUser? Manager { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Assignment>? Assignments { get; set; }
-        [JsonIgnore]
         public virtual ICollection<Class>? Classes { get; set; }
         [JsonIgnore]
         public virtual ICollection<IssueSetting>? IssueSettings { get; set; }

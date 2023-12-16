@@ -11,13 +11,13 @@ namespace IMS.Domain.Contents
 {
     public class ClassStudent : Auditable
     {
-        public Guid UserId { get; set; }
+        public Guid StudentId { get; set; }
         public int ClassId { get; set; }
 
 
         [ForeignKey(nameof(ClassId))]
         public virtual Class? Class { get; set; }
-        [ForeignKey(nameof(UserId))]
-        public virtual AppUser? User{ get; set; }
+        [ForeignKey(nameof(StudentId))]
+        public virtual AppUser? Students{ get; set; }
     }
 }
