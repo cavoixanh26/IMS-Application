@@ -3,20 +3,27 @@ using IMS.BusinessService.Systems;
 using IMS.Contract.Common.Responses;
 using IMS.Contract.Systems.Authentications;
 using IMS.Contract.Systems.Roles;
+using IMS.Domain.Systems;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IMS.Api.APIControllers.Systems
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class RoleController : ControllerBase
+	public class RoleController : BaseController
 	{
 		private readonly IRoleService _roleService;
-		public RoleController(IRoleService roleSerive)
+        private readonly UserManager<AppUser> userManager;
+
+        public RoleController(
+			IRoleService roleSerive,
+			UserManager<AppUser> userManager)
+			: base(userManager)
 		{
 			_roleService = roleSerive;
-		}
+        }
 		//alo
 		[HttpGet("all")]
 		public async Task<ActionResult<RoleResponse>> GetAllRoles([FromQuery]RoleRequest request)

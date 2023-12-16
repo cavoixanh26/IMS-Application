@@ -13,15 +13,16 @@ namespace IMS.Api.APIControllers.Systems
 
 	[Route("api/[controller]")]
 	[ApiController]
-	public class UserController : ControllerBase
+	public class UserController : BaseController
 	{
-		private readonly UserManager<AppUser> _userManager;
 		private readonly IUserService _userService;
 		private readonly IMapper _mapper;
-        public UserController(IUserService userService, UserManager<AppUser> userManager,IMapper mapper)
+        public UserController(
+			IUserService userService, 
+			UserManager<AppUser> userManager,
+			IMapper mapper) : base(userManager)
         {
 			_userService = userService;
-			_userManager = userManager;
 			_mapper = mapper;
         }
 

@@ -21,13 +21,12 @@ namespace IMS.Api.APIControllers.Systems
 {
 	[Route("api/auth")]
 	[ApiController]
-	public class AuthController : ControllerBase
+	public class AuthController : BaseController
 	{
 		private readonly IAuthService _authService;
 		private readonly IAuthService authService;
         private readonly HttpClient httpClient;
         private readonly GitlabSetting gitlabSetting;
-        private readonly UserManager<AppUser> userManager;
         private readonly IEmailSender emailSender;
         private readonly GoogleSetting googleSetting;
         public AuthController(
@@ -38,12 +37,12 @@ namespace IMS.Api.APIControllers.Systems
             IEmailSender emailSender,
             UserManager<AppUser> userManager,
             IOptions<GitlabSetting> gitlabSetting)
+            : base(userManager)
 		{
 			_authService = authenticationService;
 			this.authService = authService;
             this.httpClient = httpClient;
             this.gitlabSetting = gitlabSetting.Value;
-            this.userManager = userManager;
             this.emailSender = emailSender;
             this.googleSetting = googleSetting.Value;
         }

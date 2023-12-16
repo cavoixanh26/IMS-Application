@@ -43,7 +43,7 @@ namespace IMS.Api
                 // infor of swagger
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = "Hr LeaveManagement Api",
+                    Title = "IMS Management Api",
                     Version = "v1",
                 });
                 // define swaggger auth

@@ -1,28 +1,35 @@
 ﻿using AutoMapper;
+using IMS.Api.APIControllers;
 using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Subjects;
 using IMS.Domain.Contents;
+using IMS.Domain.Systems;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IMS.Api.Contents
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SubjectController : Controller
+    public class SubjectController : BaseController
     {
 
         private readonly IUnitOfWork _unitOfWork;
         public readonly ISubjectService _subjectService;
         public readonly IMapper _mapper;
 
-        public SubjectController(ISubjectService subjectService, IMapper mapper, IUnitOfWork unitOfWork)
+        public SubjectController(
+            UserManager<AppUser> userManager, 
+            ISubjectService subjectService, 
+            IMapper mapper, 
+            IUnitOfWork unitOfWork) 
+            : base(userManager)
         {
             _subjectService = subjectService;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-
 
         [HttpGet("{id}")]
         public async Task<ActionResult<SubjectDto>> GetSubjectById(int id)
@@ -41,6 +48,7 @@ namespace IMS.Api.Contents
         [HttpGet]
         public async Task<ActionResult<SubjectReponse>> GetAllSubject([FromQuery] SubjectRequest request)
         {
+            var idUser = await GetCurrentUserIdAsync();
             var subjectList = await _subjectService.GetSubjectAllAsync(request);
             return Ok(subjectList);
         }

@@ -133,13 +133,12 @@ namespace IMS.BusinessService.Systems
 
             var claims = new[]
             {
+                new Claim(CustomClaimType.Uid, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(CustomClaimType.Uid, user.Id.ToString()),
                 new Claim(CustomClaimType.Permissions, System.Text.Json.JsonSerializer.Serialize(permissions)),
-                new Claim(CustomClaimType.Uid, user.Id.ToString()),
-                new Claim(CustomClaimType.Uid, user.Id.ToString()),
             }
             .Union(userClaims)
             .Union(roleClaims);
