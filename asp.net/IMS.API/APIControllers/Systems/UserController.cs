@@ -13,30 +13,29 @@ namespace IMS.Api.APIControllers.Systems
 
 	[Route("api/[controller]")]
 	[ApiController]
-	public class UserController : BaseController
+	public class UserController : BaseController<IUserService>
 	{
-		private readonly IUserService _userService;
 		private readonly IMapper _mapper;
         public UserController(
-			IUserService userService, 
+			IUserService service, 
 			UserManager<AppUser> userManager,
-			IMapper mapper) : base(userManager)
+			IMapper mapper) 
+			: base(service, userManager)
         {
-			_userService = userService;
 			_mapper = mapper;
         }
 
 		[HttpGet("users")]
 		public async Task<ActionResult<UserResponse>> GetAllUsers([FromQuery]UserRequest request)
 		{
-			var data = await _userService.GetListAllAsync(request);
+			var data = await service.GetListAllAsync(request);
 			return Ok(data);
 		}
 
 		[HttpPost("assign-roles")]
 		public async Task<IActionResult> AssignRoles(Guid userId, string[] roleNames)
 		{
-			await _userService.AssignRolesAsync(userId, roleNames);
+			await service.AssignRolesAsync(userId, roleNames);
 			return Ok();
 		}
 
@@ -45,7 +44,7 @@ namespace IMS.Api.APIControllers.Systems
 		{
 			try
 			{
-				await _userService.DeleteAsync(id);
+				await service.DeleteAsync(id);
 				return Ok("User deleted successfully.");
 			}
 			catch (Exception ex)
@@ -59,7 +58,7 @@ namespace IMS.Api.APIControllers.Systems
 		{
 			try
 			{
-				var data = await _userService.GetUserByIdAsync(id);
+				var data = await service.GetUserByIdAsync(id);
 				return Ok(data);
 			}
 			catch (Exception ex)
@@ -71,7 +70,7 @@ namespace IMS.Api.APIControllers.Systems
 		[HttpPost]
 		public async Task<IActionResult> CreateUser([FromBody]CreateUserDto input)
 		{
-			await _userService.CreateUser(input);
+			await service.CreateUser(input);
 			return Ok("User create successfully.");
 		}
 
@@ -79,7 +78,7 @@ namespace IMS.Api.APIControllers.Systems
 		[HttpPut("{id}")]
 		public async Task<IActionResult> UpdateUser(Guid id,[FromForm] UpdateUserDto input)
 		{
-			await _userService.UpdateUser(id, input);
+			await service.UpdateUser(id, input);
 			return Ok("User updated successfully.");
 		}
 	}

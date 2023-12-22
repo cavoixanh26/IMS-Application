@@ -21,26 +21,21 @@ namespace IMS.Api.APIControllers.Systems
 {
 	[Route("api/auth")]
 	[ApiController]
-	public class AuthController : BaseController
+	public class AuthController : BaseController<IAuthService>
 	{
-		private readonly IAuthService _authService;
-		private readonly IAuthService authService;
         private readonly HttpClient httpClient;
         private readonly GitlabSetting gitlabSetting;
         private readonly IEmailSender emailSender;
         private readonly GoogleSetting googleSetting;
         public AuthController(
             IOptions<GoogleSetting> googleSetting,
-            IAuthService authenticationService,
-            IAuthService authService,
+            IAuthService service,
             HttpClient httpClient,
             IEmailSender emailSender,
             UserManager<AppUser> userManager,
             IOptions<GitlabSetting> gitlabSetting)
-            : base(userManager)
+            : base(service, userManager)
 		{
-			_authService = authenticationService;
-			this.authService = authService;
             this.httpClient = httpClient;
             this.gitlabSetting = gitlabSetting.Value;
             this.emailSender = emailSender;
@@ -52,7 +47,7 @@ namespace IMS.Api.APIControllers.Systems
 		[ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
 		public async Task<ActionResult<AuthResponse>> Login(LoginModel request)
 		{
-			return Ok(await _authService.Login(request));
+			return Ok(await service.Login(request));
 		}
 
 		[HttpPost("register")]
@@ -62,7 +57,7 @@ namespace IMS.Api.APIControllers.Systems
 			try
 			{
 				// Code xử lý đăng ký người dùng
-				var user = await _authService.Register(request);
+				var user = await service.Register(request);
                 //Add token to verify the email...
                 var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
                 //Encode để có thể đính kèm nó trên địa chỉ url
@@ -112,7 +107,7 @@ namespace IMS.Api.APIControllers.Systems
 
             var jsonContent = await tokenResponse.Content.ReadAsStringAsync();
             TokenResponse tok = JsonConvert.DeserializeObject<TokenResponse>(jsonContent);
-            var result = await authService.GetFromTokenAsync(tok.IdToken);
+            var result = await service.GetFromTokenAsync(tok.IdToken);
             return Ok(result);
         }
 
@@ -165,7 +160,7 @@ namespace IMS.Api.APIControllers.Systems
             if (user == null)
                 return BadRequest("Invalid External Authentication.");
 
-            var jwtSecurityToken = await authService.GenerateToken(user);
+            var jwtSecurityToken = await service.GenerateToken(user);
             var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             return Ok(new
             {

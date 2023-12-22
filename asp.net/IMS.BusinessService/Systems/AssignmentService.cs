@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using IMS.BusinessService.Service;
 using IMS.Contract.Common.Sorting;
+using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Assignments;
 using IMS.Contract.Systems.Users;
 using IMS.Domain.Contents;
@@ -19,7 +20,11 @@ namespace IMS.BusinessService.Systems
     public class AssignmentService : ServiceBase<Assignment>, IAssignmentService
     {
         
-        public AssignmentService(IMSDbContext context, IMapper mapper) : base(context, mapper)
+        public AssignmentService(
+            IMSDbContext context, 
+            IMapper mapper,
+            IUnitOfWork unitOfWork) 
+            : base(context, mapper, unitOfWork)
         {
         }
 

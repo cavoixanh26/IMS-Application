@@ -1,100 +1,102 @@
 ﻿using AutoMapper;
 using IMS.Api.APIControllers;
+using IMS.BusinessService.Constants;
 using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Subjects;
 using IMS.Domain.Contents;
 using IMS.Domain.Systems;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IMS.Api.Contents
+namespace IMS.Api.Contents;
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize(Roles = RoleDefault.Admin)]
+public class SubjectController : BaseController<ISubjectService>
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class SubjectController : BaseController
+    private readonly IUnitOfWork _unitOfWork;
+    public readonly IMapper _mapper;
+
+    public SubjectController(
+        UserManager<AppUser> userManager,
+        ISubjectService service,
+        IMapper mapper,
+        IUnitOfWork unitOfWork)
+        : base(service, userManager)
     {
+        _mapper = mapper;
+        _unitOfWork = unitOfWork;
+    }
 
-        private readonly IUnitOfWork _unitOfWork;
-        public readonly ISubjectService _subjectService;
-        public readonly IMapper _mapper;
-
-        public SubjectController(
-            UserManager<AppUser> userManager, 
-            ISubjectService subjectService, 
-            IMapper mapper, 
-            IUnitOfWork unitOfWork) 
-            : base(userManager)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<SubjectDto>> GetSubjectById(int id)
+    {
+        try
         {
-            _subjectService = subjectService;
-            _mapper = mapper;
-            _unitOfWork = unitOfWork;
+            var subject = await service.GetBySubjectByIdAsync(id);
+            return Ok(subject);
         }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<SubjectDto>> GetSubjectById(int id)
+        catch (Exception ex)
         {
-            try
-            {
-                var subject = await _subjectService.GetBySubjectByIdAsync(id);
-                return Ok(subject);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            return BadRequest(ex.Message);
         }
+    }
 
-        [HttpGet]
-        public async Task<ActionResult<SubjectReponse>> GetAllSubject([FromQuery] SubjectRequest request)
+    [HttpGet]
+    public async Task<ActionResult<SubjectReponse>> GetSubjects([FromQuery] SubjectRequest request)
+    {
+        var subjectList = await service.GetSubjectAllAsync(request);
+        return Ok(subjectList);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateUpdateSubjectDto request)
+    {
+        try
         {
-            var idUser = await GetCurrentUserIdAsync();
-            var subjectList = await _subjectService.GetSubjectAllAsync(request);
-            return Ok(subjectList);
+            var response = await service.CreateSubject(request);
+            return Ok(response);
         }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateNewSubject([FromBody] CreateUpdateSubjectDto data)
+        catch (Exception ex)
         {
-            var map = _mapper.Map<Subject>(data);
-            var result = await _subjectService.InsertAsync(map);
+            return BadRequest(ex.ToString());
+        }
+    }
+
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateSubject(int id, [FromBody] CreateUpdateSubjectDto input)
+    {
+        var data = await service.GetById(id);
+        if (data == null)
+        {
+            return NotFound("Not found subject");
+        }
+        else
+        {
+            var map = _mapper.Map(input, data);
+            var result = await service.UpdateAsync(map);
             await _unitOfWork.SaveChangesAsync();
-            return Ok("Add successfully ");
+            return Ok("Update Successfully");
         }
 
+    }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSubject(int id, [FromBody] CreateUpdateSubjectDto input)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteSubject(int id)
+    {
+        var data = await service.GetById(id);
+        if (data != null)
         {
-            var data = await _subjectService.GetById(id);
-            if (data == null)
-            {
-                return NotFound("Not found subject");
-            }
-            else
-            {
-                var map = _mapper.Map(input, data);
-                var result = await _subjectService.UpdateAsync(map);
-                await _unitOfWork.SaveChangesAsync();
-                return Ok("Update Successfully");
-            }
-
+            await service.DeleteAsync(data);
+            await _unitOfWork.SaveChangesAsync();
+            return Ok("Delete Successfully !!!");
         }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSubject(int id)
+        else
         {
-            var data = await _subjectService.GetById(id);
-            if (data != null)
-            {
-                await _subjectService.DeleteAsync(data);
-                await _unitOfWork.SaveChangesAsync();
-                return Ok("Delete Successfully !!!");
-            }
-            else
-            {
-                return NotFound("Not found subject");
-            }
+            return NotFound("Not found subject");
         }
     }
 }

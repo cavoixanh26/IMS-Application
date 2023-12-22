@@ -12,5 +12,6 @@ namespace IMS.Contract.Contents.Subjects
     {
         Task<SubjectReponse> GetSubjectAllAsync(SubjectRequest request);
         Task<SubjectDto> GetBySubjectByIdAsync(int subjectId);
+        Task<SubjectDto> CreateSubject(CreateUpdateSubjectDto request);
     }
 }

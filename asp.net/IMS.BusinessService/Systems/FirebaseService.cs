@@ -2,6 +2,7 @@
 using Firebase.Auth;
 using Firebase.Storage;
 using IMS.BusinessService.Service;
+using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Systems.Firebase;
 using IMS.Contract.Systems.Settings;
 using IMS.Domain.Systems;
@@ -17,8 +18,9 @@ public class FirebaseService : ServiceBase<AppUser>, IFirebaseService
 	public FirebaseService(
 		IMSDbContext context,
 		IMapper mapper,
-		IOptions<FirebaseSetting> firebaseSetting
-		) : base(context, mapper)
+		IOptions<FirebaseSetting> firebaseSetting,
+            IUnitOfWork unitOfWork
+        ) : base(context, mapper, unitOfWork)
     {
 		this.firebaseSetting = firebaseSetting.Value;
 	}

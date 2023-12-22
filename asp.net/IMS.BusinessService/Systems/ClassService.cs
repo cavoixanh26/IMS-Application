@@ -1,6 +1,7 @@
 using AutoMapper;
 using IMS.BusinessService.Service;
 using IMS.Contract.Common.Sorting;
+using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Classes;
 using IMS.Domain.Contents;
 using IMS.Infrastructure.EnityFrameworkCore;
@@ -15,11 +16,13 @@ namespace IMS.BusinessService.Systems
 {
     public class ClassService : ServiceBase<Class>, IClassService
     {
-        private readonly IMapper _mapper;
 
-        public ClassService(IMSDbContext context, IMapper mapper) : base(context, mapper)
+        public ClassService(
+            IMSDbContext context, 
+            IMapper mapper,
+            IUnitOfWork unitOfWork) 
+            : base(context, mapper, unitOfWork)
         {
-            _mapper = mapper;
         }
 
         public async Task<ClassReponse> GetAllClass(ClassRequest request)

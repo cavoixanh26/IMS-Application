@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
+using IMS.Contract.Common.UnitOfWorks;
 
 namespace IMS.BusinessService.Systems
 {
@@ -25,8 +26,9 @@ namespace IMS.BusinessService.Systems
 			RoleManager<AppRole> roleManager,
 			IFirebaseService firebaseService,
             IMSDbContext context,
-			IMapper mapper)
-			: base(context, mapper)
+			IMapper mapper,
+            IUnitOfWork unitOfWork)
+			: base(context, mapper, unitOfWork)
 		{
 			_userManager = userManager;
 			_roleManager = roleManager;

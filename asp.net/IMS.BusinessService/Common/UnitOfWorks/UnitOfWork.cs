@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,9 +39,10 @@ namespace IMS.BusinessService.Common.UnitOfWorks
 
 		public async Task SaveChangesAsync()
 		{
-			var username = _httpContextAccessor.HttpContext.User.Identity.Name;
+			var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email);
 
-			await _context.SaveChangesAsync(username);
+
+			await _context.SaveChangesAsync(username.Value);
 		}
 	}
 }

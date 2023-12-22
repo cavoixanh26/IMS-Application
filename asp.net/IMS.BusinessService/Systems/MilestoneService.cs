@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using IMS.BusinessService.Service;
 using IMS.Contract.Common.Sorting;
+using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Assignments;
 using IMS.Contract.Contents.Milestones;
 using IMS.Domain.Contents;
@@ -16,7 +17,11 @@ namespace IMS.BusinessService.Systems
 {
     public class MilestoneService : ServiceBase<Milestone>, IMilestoneService
     {
-        public MilestoneService(IMSDbContext context, IMapper mapper) : base(context, mapper)
+        public MilestoneService(
+            IMSDbContext context, 
+            IMapper mapper,
+            IUnitOfWork unitOfWork) 
+            : base(context, mapper, unitOfWork)
         {
         }
 

@@ -2,6 +2,7 @@
 using IMS.BusinessService.Service;
 using IMS.Contract.Common.Paging;
 using IMS.Contract.Common.Sorting;
+using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Issues;
 using IMS.Contract.Contents.Milestones;
 using IMS.Domain.Contents;
@@ -17,7 +18,11 @@ namespace IMS.BusinessService.Systems
 {
     internal class IssueService : ServiceBase<Issue>, IIssueService
     {
-        public IssueService(IMSDbContext context, IMapper mapper) : base(context, mapper)
+        public IssueService(
+            IMSDbContext context, 
+            IMapper mapper,
+            IUnitOfWork unitOfWork) 
+            : base(context, mapper, unitOfWork)
         {
         }
 

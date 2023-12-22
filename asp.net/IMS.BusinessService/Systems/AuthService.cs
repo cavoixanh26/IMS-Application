@@ -6,6 +6,7 @@ using IMS.BusinessService.Service;
 using IMS.Contract.Common;
 using IMS.Contract.Common.Responses;
 using IMS.Contract.Common.Responses.LoginResponse;
+using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Systems.Authentications;
 using IMS.Contract.Systems.Roles;
 using IMS.Contract.Systems.Settings;
@@ -45,8 +46,9 @@ namespace IMS.BusinessService.Systems
             IOptions<JwtSetting> jwtSettings,
             RoleManager<AppRole> roleManager,
             IEmailSender emailSender,
-            IOptions<AppSetting> appSetting)
-            : base(context, mapper)
+            IOptions<AppSetting> appSetting,
+            IUnitOfWork unitOfWork)
+            : base(context, mapper, unitOfWork)
         {
             _signInManager = signInManager;
             _userManager = userManager;

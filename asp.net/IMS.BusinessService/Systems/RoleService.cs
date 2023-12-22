@@ -3,6 +3,7 @@ using IMS.BusinessService.Constants;
 using IMS.BusinessService.Extension;
 using IMS.BusinessService.Service;
 using IMS.Contract.Common.Sorting;
+using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Systems.Roles;
 using IMS.Domain.Systems;
 using IMS.Infrastructure.EnityFrameworkCore;
@@ -26,8 +27,9 @@ namespace IMS.BusinessService.Systems
 		public RoleService(UserManager<AppUser> userManager,
 			RoleManager<AppRole> roleManager,
 			IMapper mapper,
-			IMSDbContext context)
-			: base(context, mapper)
+			IMSDbContext context,
+			IUnitOfWork unitOfWork)
+			: base(context, mapper, unitOfWork)
 		{
 			_userManager = userManager;
 			_roleManager = roleManager;

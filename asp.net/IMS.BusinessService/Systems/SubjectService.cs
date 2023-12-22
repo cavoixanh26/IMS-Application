@@ -1,56 +1,64 @@
 ﻿using AutoMapper;
 using IMS.BusinessService.Service;
 using IMS.Contract.Common.Sorting;
-using IMS.Contract.Contents.Assignments;
+using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Subjects;
 using IMS.Domain.Contents;
 using IMS.Infrastructure.EnityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using IMS.Contract.ExceptionHandling;
 
 namespace IMS.BusinessService.Systems
 {
     public class SubjectService : ServiceBase<Subject>, ISubjectService
     {
-        private readonly IMapper _mapper;
-
-        public SubjectService(IMSDbContext context, IMapper mapper) : base(context, mapper)
+        public SubjectService(
+            IMSDbContext context,
+            IMapper mapper,
+            IUnitOfWork unitOfWork) 
+            : base(context, mapper, unitOfWork)
         {
-            _mapper = mapper;
         }
 
-        public async Task<SubjectDto> GetBySubjectByIdAsync(int subjectId)
+        public async Task<SubjectDto> CreateSubject(CreateUpdateSubjectDto request)
+        {
+            var checkExistSubject = await context.Subjects
+                .AnyAsync(x => x.Name.Equals(request.Name));
+            if (checkExistSubject)
+            {
+                throw HttpException.BadRequestException("Subject's name exist");
+            }
+
+            var subject = mapper.Map<Subject>(request);
+            await context.Subjects.AddAsync(subject);
+            await unitOfWork.SaveChangesAsync();
+            var subjectDto = mapper.Map<SubjectDto>(subject);
+            return subjectDto;
+        }
+
+        public async Task<SubjectDto> GetBySubjectByIdAsync(int id)
         {
             var subject = await context.Subjects
-            .Include(x => x.Classes)
-            .Include(x => x.IssueSettings)
-            .Include(x => x.SubjectUsers)
-            .FirstOrDefaultAsync(u => u.Id == subjectId);
-
+                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive != false);
             var subjectDto = mapper.Map<SubjectDto>(subject);
             return subjectDto;
         }
 
         public async Task<SubjectReponse> GetSubjectAllAsync(SubjectRequest request)
         {
-            var subjectQuery = await context.Subjects
-                .Include(x => x.Classes)
-                .Include(x => x.IssueSettings)
-                .Include(x => x.SubjectUsers)
-                .Where(u => string.IsNullOrWhiteSpace(request.KeyWords)
-            || u.Name.Contains(request.KeyWords)
-            || u.Description.Contains(request.KeyWords)).ToListAsync();
-            var subjects = subjectQuery.Paginate(request);
-            var subjectDtos = mapper.Map<List<SubjectDto>>(subjects);
+            var subjects = await context.Subjects
+                .Where(x => string.IsNullOrWhiteSpace(request.KeyWords)
+                        || x.Name.Contains(request.KeyWords)
+                        || x.Description.Contains(request.KeyWords)
+                        && x.IsActive != false)
+                .ToListAsync();
+
+            var subjectDtos = mapper.Map<List<SubjectDto>>(subjects.Paginate(request));
 
             var response = new SubjectReponse
             {
                 Subjects = subjectDtos,
-                Page = GetPagingResponse(request, subjectQuery.Count()),
+                Page = GetPagingResponse(request, subjects.Count()),
             };
 
             return response;

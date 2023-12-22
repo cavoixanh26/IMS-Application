@@ -8,7 +8,10 @@ namespace IMS.BusinessService.Constants
 {
 	public class RoleDefault
 	{
-		public static string Admin = "Admin";
-		public static string User = "User";
+		public const string Admin = "Admin";
+		public const string Manager = "Manager";
+		public const string Teacher = "Teacher";
+		public const string TeamLeader = "Teamleader";
+		public const string User = "User";
     }
 }

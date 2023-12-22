@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using IMS.BusinessService.Service;
 using IMS.Contract.Common.Sorting;
+using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Projects;
 using IMS.Contract.Contents.Subjects;
 using IMS.Domain.Contents;
@@ -16,10 +17,12 @@ namespace IMS.BusinessService.Systems
 {
     public class ProjectService : ServiceBase<Project>, IProjectService
     {
-        private readonly IMapper _mapper;
-        public ProjectService(IMSDbContext context, IMapper mapper) : base(context, mapper)
+        public ProjectService(
+            IMSDbContext context, 
+            IMapper mapper,
+            IUnitOfWork unitOfWork) 
+            : base(context, mapper, unitOfWork)
         {
-            _mapper = mapper;
         }
 
         public async Task<ProjectReponse> GetAllProjectAsync(ProjectRequest request)

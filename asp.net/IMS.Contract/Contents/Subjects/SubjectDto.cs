@@ -8,18 +8,9 @@ using System.Threading.Tasks;
 
 namespace IMS.Contract.Contents.Subjects
 {
-    public class SubjectDto
+    public class SubjectDto : BaseDto
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
-        [NotMapped]
-        public IList<Assignment> Assignments { get; set; }
-        [NotMapped]
-        public IList<Class> Classes { get; set; }
-        [NotMapped]
-        public IList<IssueSetting>? IssueSettings { get; set; }
-        [NotMapped]
-        public IList<SubjectUser> SubjectUsers { get; set; }
     }
 }

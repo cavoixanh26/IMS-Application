@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using IMS.BusinessService.Service;
 using IMS.Contract.Common.Sorting;
+using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Settings;
 using IMS.Domain.Contents;
 using IMS.Infrastructure.EnityFrameworkCore;
@@ -11,8 +12,9 @@ public class SettingService : ServiceBase<Setting>, ISettingService
 {
     public SettingService(
         IMSDbContext context, 
-        IMapper mapper) 
-        : base(context, mapper)
+        IMapper mapper,
+        IUnitOfWork unitOfWork) 
+        : base(context, mapper, unitOfWork)
     {
     }
 
