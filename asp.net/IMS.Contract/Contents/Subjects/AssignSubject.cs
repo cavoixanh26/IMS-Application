@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace IMS.Contract.Contents.Subjects
 {
-    public class CreateUpdateSubjectDto
+    public class AssignSubject
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public bool IsActive { get; set; }
+        public int SubjectId { get; set; }
+        public string ManagerId { get; set; }
     }
 }

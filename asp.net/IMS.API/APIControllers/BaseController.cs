@@ -28,4 +28,10 @@ public class BaseController<TService> : ControllerBase
         var user = await userManager.GetUserAsync(currentUser);
         return user;
     }
+
+    protected async Task<bool> CheckRole(string role)
+    {
+        var user = await userManager.GetUserAsync(this.User);
+        return await userManager.IsInRoleAsync(user, role);
+    }
 }

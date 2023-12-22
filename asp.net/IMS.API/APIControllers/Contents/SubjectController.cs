@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using IMS.Api.APIControllers;
 using IMS.BusinessService.Constants;
 using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Subjects;
-using IMS.Domain.Contents;
 using IMS.Domain.Systems;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +11,7 @@ namespace IMS.Api.APIControllers.Contents;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = RoleDefault.Admin)]
+[Authorize(Roles = $"{RoleDefault.Admin},{RoleDefault.Manager}")]
 public class SubjectController : BaseController<ISubjectService>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -47,11 +45,18 @@ public class SubjectController : BaseController<ISubjectService>
     [HttpGet]
     public async Task<ActionResult<SubjectReponse>> GetSubjects([FromQuery] SubjectRequest request)
     {
-        var subjectList = await service.GetSubjectAllAsync(request);
+        string managerId = "";
+        if (await CheckRole(RoleDefault.Manager))
+        {
+            managerId = userManager.GetUserId(User);
+        }
+
+        var subjectList = await service.GetSubjectAllAsync(request, managerId);
         return Ok(subjectList);
     }
 
     [HttpPost]
+    [Authorize(Roles = RoleDefault.Admin)]
     public async Task<IActionResult> Create([FromBody] CreateUpdateSubjectDto request)
     {
         try
@@ -69,34 +74,22 @@ public class SubjectController : BaseController<ISubjectService>
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateSubject(int id, [FromBody] CreateUpdateSubjectDto input)
     {
-        var data = await service.GetById(id);
-        if (data == null)
-        {
-            return NotFound("Not found subject");
-        }
-        else
-        {
-            var map = _mapper.Map(input, data);
-            var result = await service.UpdateAsync(map);
-            await _unitOfWork.SaveChangesAsync();
-            return Ok("Update Successfully");
-        }
-
+        await service.UpdateSubject(id, input);
+        return Ok("successfully");
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteSubject(int id)
+    [HttpPut("assign-subject")]
+    [Authorize(Roles = RoleDefault.Admin)]
+    public async Task<IActionResult> AssignSubjectForManager(AssignSubject request)
     {
-        var data = await service.GetById(id);
-        if (data != null)
+        try
         {
-            await service.DeleteAsync(data);
-            await _unitOfWork.SaveChangesAsync();
-            return Ok("Delete Successfully !!!");
+            var subjectDto = await service.UpdateAssignManager(request);
+            return Ok(subjectDto);
         }
-        else
+        catch (Exception ex)
         {
-            return NotFound("Not found subject");
+            return BadRequest(ex.Message);
         }
     }
 }
