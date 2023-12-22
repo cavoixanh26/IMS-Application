@@ -4,6 +4,7 @@ using IMS.BusinessService.Extension;
 using IMS.BusinessService.Service;
 using IMS.Contract.Common.Sorting;
 using IMS.Contract.Common.UnitOfWorks;
+using IMS.Contract.ExceptionHandling;
 using IMS.Contract.Systems.Roles;
 using IMS.Domain.Systems;
 using IMS.Infrastructure.EnityFrameworkCore;
@@ -64,8 +65,7 @@ namespace IMS.BusinessService.Systems
 					|| x.Description.Contains(request.KeyWords))
 				.ToListAsync();
 
-			var rolePaging = roles.Paginate(request);
-			var roleDtos = mapper.Map<List<RoleDto>>(rolePaging);
+			var roleDtos = mapper.Map<List<RoleDto>>(roles.Paginate(request));
 
 			var response = new RoleResponse
 			{
@@ -78,11 +78,13 @@ namespace IMS.BusinessService.Systems
 		public async Task<RoleDto> GetRoleById(Guid roleId)
 		{
 			var role = await _roleManager.FindByIdAsync(roleId.ToString());
-			if (role == null) throw new Exception("Not found");
-			return mapper.Map<AppRole, RoleDto>(role);
+			if (role == null) 
+				throw HttpException.NotFoundException("Not found");
+			var roleDto = mapper.Map<RoleDto>(role);
+			return roleDto;
 		}
 
-	
+
 		public async Task UpdateRole(Guid id, CreateUpdateRoleDto input)
 		{
 			var role = await _roleManager.FindByIdAsync(id.ToString());

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IMS.Api.Contents;
+namespace IMS.Api.APIControllers.Contents;
 
 [Route("api/[controller]")]
 [ApiController]

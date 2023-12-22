@@ -20,8 +20,8 @@ namespace IMS.Api.APIControllers.Systems
 			: base(service, userManager)
 		{
         }
-		//alo
-		[HttpGet("all")]
+
+		[HttpGet]
 		public async Task<ActionResult<RoleResponse>> GetAllRoles([FromQuery]RoleRequest request)
 		{
 			var data = await service.GetListAllAsync(request);
