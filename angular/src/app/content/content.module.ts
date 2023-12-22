@@ -17,7 +17,6 @@ import { BadgeModule } from 'primeng/badge';
 import { ImageModule } from 'primeng/image';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CalendarModule } from 'primeng/calendar';
-import { SystemRoutingModule } from '../system/system-routing.module';
 import { PickListModule } from 'primeng/picklist';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -38,6 +37,10 @@ import { AssignmentDetailComponent } from './subject/subject-detail/assignment-d
 import { MilestoneComponent } from './milestone/milestone.component';
 import { MilestoneDetailComponent } from './milestone/milestone-detail/milestone-detail.component';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { ClassModalComponent } from './class/class-modal/class-modal.component';
+import { ClassDetailComponent } from './class/class-detail/class-detail.component';
+import { IssueDetailComponent } from './issue/issue-detail/issue-detail.component';
 @NgModule({
   declarations: [
     SubjectComponent,
@@ -48,6 +51,9 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     AssignmentDetailComponent,
     MilestoneComponent,
     MilestoneDetailComponent,
+    ClassModalComponent,
+    ClassDetailComponent,
+    IssueDetailComponent,
   ],
   imports: [
     CommonModule,
@@ -83,7 +89,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     NightMarketSharedModule,
     ContentRoutingModule,
     AccordionModule,
-    RadioButtonModule
+    RadioButtonModule,
+    MultiSelectModule
   ],
 })
 export class ContentModule { }
