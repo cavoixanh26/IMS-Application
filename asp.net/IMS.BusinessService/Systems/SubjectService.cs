@@ -93,13 +93,19 @@ public class SubjectService : ServiceBase<Subject>, ISubjectService
         return subjectDto;
     }
 
-    public async Task UpdateSubject(int id, CreateUpdateSubjectDto request)
+    public async Task UpdateSubject(int id, CreateUpdateSubjectDto request, AppUser currentUser)
     {
         var subject = await context.Subjects.FindAsync(id);
         if (subject == null)
         {
             throw HttpException.NotFoundException("Subject doest not exist yet");
-        } 
+        }
+
+        var checkRoleAdmin = await userManager.IsInRoleAsync(currentUser, RoleDefault.Admin);
+        if (subject.ManagerId != currentUser.Id && !checkRoleAdmin)
+        {
+            throw HttpException.NoPermissionException("Not Permission!");
+        }
         
         mapper.Map(request, subject);
         context.Update(subject);

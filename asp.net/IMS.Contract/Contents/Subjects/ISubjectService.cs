@@ -1,5 +1,6 @@
 ﻿using IMS.Contract.Common.UnitOfWorks;
 using IMS.Domain.Contents;
+using IMS.Domain.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,6 @@ namespace IMS.Contract.Contents.Subjects
         Task<SubjectDto> GetBySubjectByIdAsync(int subjectId);
         Task<SubjectDto> CreateSubject(CreateUpdateSubjectDto request);
         Task<SubjectDto> UpdateAssignManager(AssignSubject request);
-        Task UpdateSubject(int id, CreateUpdateSubjectDto request);
+        Task UpdateSubject(int id, CreateUpdateSubjectDto request, AppUser currentUser);
     }
 }

@@ -14,18 +14,11 @@ namespace IMS.Api.APIControllers.Contents;
 [Authorize(Roles = $"{RoleDefault.Admin},{RoleDefault.Manager}")]
 public class SubjectController : BaseController<ISubjectService>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    public readonly IMapper _mapper;
-
     public SubjectController(
         UserManager<AppUser> userManager,
-        ISubjectService service,
-        IMapper mapper,
-        IUnitOfWork unitOfWork)
+        ISubjectService service)
         : base(service, userManager)
     {
-        _mapper = mapper;
-        _unitOfWork = unitOfWork;
     }
 
     [HttpGet("{id}")]
@@ -74,7 +67,8 @@ public class SubjectController : BaseController<ISubjectService>
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateSubject(int id, [FromBody] CreateUpdateSubjectDto input)
     {
-        await service.UpdateSubject(id, input);
+        var currentUser = await GetCurrentUserAsync();
+        await service.UpdateSubject(id, input, currentUser);
         return Ok("successfully");
     }
 
