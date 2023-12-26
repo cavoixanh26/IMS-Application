@@ -139,17 +139,17 @@ export class SubjectComponent implements OnInit,OnDestroy {
   deleteItemsConfirm(id: any) {
     this.toggleBlockUI(true);
 
-    this.subjectService.subjectDELETE(id).subscribe({
-      next: () => {
-        this.notificationService.showSuccess(MessageConstants.DELETED_OK_MSG);
-        this.loadData();
-        this.selectedItems = [];
-        this.toggleBlockUI(false);
-      },
-      error: () => {
-        this.toggleBlockUI(false);
-      },
-    });
+    // this.subjectService.subjectDELETE(id).subscribe({
+    //   next: () => {
+    //     this.notificationService.showSuccess(MessageConstants.DELETED_OK_MSG);
+    //     this.loadData();
+    //     this.selectedItems = [];
+    //     this.toggleBlockUI(false);
+    //   },
+    //   error: () => {
+    //     this.toggleBlockUI(false);
+    //   },
+    // });
   }
 
   private toggleBlockUI(enabled: boolean) {

@@ -1,5 +1,6 @@
 ﻿using IMS.Contract.Common.UnitOfWorks;
 using IMS.Domain.Contents;
+using IMS.Domain.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace IMS.Contract.Contents.Classes
 {
     public interface IClassService : IGenericRepository<Class>
     {
-        Task<ClassReponse> GetAllClass(ClassRequest request);
+        Task<ClassReponse> GetClasses(ClassRequest request, AppUser currentUser);
         Task<ClassDto> GetClassById(int classId);
     }
 }

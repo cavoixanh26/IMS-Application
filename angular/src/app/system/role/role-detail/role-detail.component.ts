@@ -69,7 +69,7 @@ export class RoleDetailComponent implements OnInit, OnDestroy{
   loadDetail(id: any) {
     this.toggleBlockUI(true);
     this.roleService
-      .roleGET(id)
+      .roleGET2(id)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (response: RoleDto) => {

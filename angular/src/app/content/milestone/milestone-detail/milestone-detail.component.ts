@@ -9,19 +9,25 @@ import { UtilityService } from 'src/app/shared/services/utility.service';
   selector: 'app-milestone-detail',
   templateUrl: './milestone-detail.component.html',
 })
-export class MilestoneDetailComponent implements OnInit,OnDestroy {
+export class MilestoneDetailComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<void>();
   categories: any[] = [
     { name: 'Class', key: 'C' },
     { name: 'Project', key: 'P' },
-];
+  ];
 
-showProjectDropdown: boolean = false;
-showClassDropdown: boolean = false;
+  showProjectDropdown: boolean = false;
+  showClassDropdown: boolean = false;
 
+  public page: number = 1;
+  public itemsPerPage: number = 10;
+  public totalCount: number;
+  public keyWords: string;
+  public skip: number | null;
+  public take: number | null;
+  public sortField: string | null;
 
-isUpdating: boolean = false;
-
+  isUpdating: boolean = false;
 
   // Default
   public blockedPanel: boolean = false;
@@ -32,12 +38,11 @@ isUpdating: boolean = false;
   public closeBtnName: string;
   selectedEntity = {} as MilestoneDto;
 
-//Filter variables
-projectId: number ;
-classId:number ;
-classList: any[] = [];
-projectList: any[] = [];
-
+  //Filter variables
+  projectId: number;
+  classId: number;
+  classList: any[] = [];
+  projectList: any[] = [];
 
   constructor(
     private utilService: UtilityService,
@@ -47,7 +52,7 @@ projectList: any[] = [];
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
     private fb: FormBuilder
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.buildForm();
@@ -65,7 +70,6 @@ projectList: any[] = [];
       this.saveBtnName = 'Thêm';
       this.closeBtnName = 'Đóng';
     }
-
   }
 
   loadFormDetails(id: number) {
@@ -90,12 +94,18 @@ projectList: any[] = [];
 
   buildForm() {
     this.form = this.fb.group({
-      startDate: new FormControl(this.selectedEntity.startDate || null,Validators.required),
-      dueDate: new FormControl(this.selectedEntity.dueDate || null,Validators.required),
+      startDate: new FormControl(
+        this.selectedEntity.startDate || null,
+        Validators.required
+      ),
+      dueDate: new FormControl(
+        this.selectedEntity.dueDate || null,
+        Validators.required
+      ),
       description: new FormControl(this.selectedEntity.description || null),
       classId: new FormControl(this.selectedEntity.classId || null),
       projectId: new FormControl(this.selectedEntity.projectId || null),
-      selectedCategory: new FormControl()
+      selectedCategory: new FormControl(),
     });
   }
 
@@ -127,7 +137,6 @@ projectList: any[] = [];
     this.ngUnsubscribe.complete();
   }
 
-
   validationMessages = {
     name: [
       { type: 'required', message: 'Bạn phải nhập tên' },
@@ -152,25 +161,46 @@ projectList: any[] = [];
   }
 
   loadProjects() {
-    this.projectService.projectGET().subscribe((response: ProjectReponse) => {
-      response.projects.forEach(project => {
-        this.projectList.push({
-          label: project.name,
-          value: project.id,
+    this.projectService
+      .projectGET(
+        undefined,
+        this.keyWords,
+        this.page,
+        this.itemsPerPage,
+        this.skip,
+        this.take,
+        this.sortField
+      )
+      .subscribe((response: ProjectReponse) => {
+        response.projects.forEach((project) => {
+          this.projectList.push({
+            label: project.name,
+            value: project.id,
+          });
         });
       });
-    });
   }
 
   loadClasses() {
-    this.classService.classes().subscribe((response: ClassReponse) => {
-      response.classes.forEach(project => {
-        this.classList.push({
-          label: project.name,
-          value: project.id,
+    this.classService
+      .classGET(
+        undefined,
+        undefined,
+        this.keyWords,
+        this.page,
+        this.itemsPerPage,
+        this.skip,
+        this.take,
+        this.sortField
+      )
+      .subscribe((response: ClassReponse) => {
+        response.classes.forEach((project) => {
+          this.classList.push({
+            label: project.name,
+            value: project.id,
+          });
         });
       });
-    });
   }
 
   onRadioButtonClick(categoryKey: string) {

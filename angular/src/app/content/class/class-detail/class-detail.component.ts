@@ -1,6 +1,4 @@
-import { ClassStudentDto } from './../../../api/api-generate';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { User } from '@angular/fire/auth';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -68,7 +66,6 @@ public selectedStudents : UserDto[] = [];
     this.toggleBlockUI(true);
     this.userService
       .users(
-        this.classId,undefined,
         this.keyWords,
         this.page,
         this.itemsPerPage,
@@ -118,7 +115,12 @@ public selectedStudents : UserDto[] = [];
   }
 
   loadStudents() {
-    this.userService.users().subscribe((response: UserResponse) => {
+    this.userService.users(this.keyWords,
+        this.page,
+        this.itemsPerPage,
+        this.skip,
+        this.take,
+        this.sortField).subscribe((response: UserResponse) => {
       response.users.forEach(s => {
         this.studentList.push({
           label: s.fullName,
@@ -171,33 +173,33 @@ public selectedStudents : UserDto[] = [];
 }
 
 addStudent() {
-  var ids = [];
-  this.selectedStudents.forEach((element) => {
-    ids.push(element);
-  });
+  // var ids = [];
+  // this.selectedStudents.forEach((element) => {
+  //   ids.push(element);
+  // });
 
-  var data: ClassStudentDto[] = [];
+  // var data: ClassStudentDto[] = [];
 
-  ids.forEach((userDto) => {
-    var classStudentDto: ClassStudentDto = {
-      classId: this.classId,
-      userId: userDto.value,
-    };
+  // ids.forEach((userDto) => {
+  //   var classStudentDto: ClassStudentDto = {
+  //     classId: this.classId,
+  //     userId: userDto.value,
+  //   };
 
-    data.push(classStudentDto);
-  });
+  //   data.push(classStudentDto);
+  // });
 
-  this.classService.addStudent(data).subscribe({
-    next: () => {
-      this.notificationService.showSuccess(MessageConstants.CREATED_OK_MSG);
-      this.loadDataUsers();
-      this.selectedStudents = [];
-      this.toggleBlockUI(false);
-    },
-    error: () => {
-      this.toggleBlockUI(false);
-    },
-  });
+  // this.classService.addStudent(data).subscribe({
+  //   next: () => {
+  //     this.notificationService.showSuccess(MessageConstants.CREATED_OK_MSG);
+  //     this.loadDataUsers();
+  //     this.selectedStudents = [];
+  //     this.toggleBlockUI(false);
+  //   },
+  //   error: () => {
+  //     this.toggleBlockUI(false);
+  //   },
+  // });
 }
 
 

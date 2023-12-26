@@ -62,7 +62,7 @@ constructor(
     this.toggleBlockUI(true);
 
     this.classService
-    .classes(this.settingId,this.subjectId,this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
+    .classGET(this.settingId,this.subjectId,this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (response: ClassReponse) => {
@@ -81,14 +81,23 @@ constructor(
   }
 
   loadSubjects() {
-    this.subjectService.subjectGET2().subscribe((response: SubjectReponse) => {
-      response.subjects.forEach(s => {
-        this.subjectList.push({
-          label: s.name,
-          value: s.id,
+    this.subjectService
+      .subjectGET2(
+        this.keyWords,
+        this.page,
+        this.itemsPerPage,
+        this.skip,
+        this.take,
+        this.sortField
+      )
+      .subscribe((response: SubjectReponse) => {
+        response.subjects.forEach((s) => {
+          this.subjectList.push({
+            label: s.name,
+            value: s.id,
+          });
         });
       });
-    });
   }
 
   handleSubjectChange(newValue) {
@@ -98,14 +107,24 @@ constructor(
   }
 
   loadSettings() {
-    this.settingService.settingGET().subscribe((response: SettingResponse) => {
-      this.settingList = response.settings
-      .filter(setting => setting.type === SettingType._1)
-      .map(setting => ({
-        label: setting.name,
-        value: setting.id,
-      }));
-  });
+    this.settingService
+      .settingGET(
+        undefined,
+        this.keyWords,
+        this.page,
+        this.itemsPerPage,
+        this.skip,
+        this.take,
+        this.sortField
+      )
+      .subscribe((response: SettingResponse) => {
+        this.settingList = response.settings
+          .filter((setting) => setting.type === SettingType._1)
+          .map((setting) => ({
+            label: setting.name,
+            value: setting.id,
+          }));
+      });
   }
 
   handleSettingChange(newValue) {

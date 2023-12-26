@@ -27,10 +27,15 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   public saveBtnName: string;
   public roles: any[] = [];
   selectedEntity = {} as UserDto;
-  public avatarImage : any;
-  public keyword: string = '';
+  public avatarImage: any;
   formSavedEventEmitter: EventEmitter<any> = new EventEmitter();
-
+  public page: number = 1;
+  public itemsPerPage: number = 5;
+  public totalCount: number;
+  public keyWords: string | null;
+  public skip: number | null;
+  public take: number | null;
+  public sortField: string | null;
   constructor(
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
@@ -39,12 +44,12 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     private userServiceCustom: UserClientCustom,
     public authService: AuthClient,
     private utilService: UtilityService,
-    private notificationService : NotificationService,
+    private notificationService: NotificationService,
     private cd: ChangeDetectorRef,
     public dialogService: DialogService,
     private fb: FormBuilder,
     private fileService: FileService,
-    private utilityService: UtilityService,
+    private utilityService: UtilityService
   ) {}
   ngOnDestroy(): void {
     if (this.ref) {
@@ -59,13 +64,21 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     this.buildForm();
     //Load data to form
     this.toggleBlockUI(true);
-    this.roleService.all()
+    this.roleService
+      .roleGET(
+        this.keyWords,
+        this.page,
+        this.itemsPerPage,
+        this.skip,
+        this.take,
+        this.sortField
+      )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (repsonse: any) => {
           //Push categories to dropdown list
           var roles = repsonse.roles as RoleDto[];
-          roles.forEach(element => {
+          roles.forEach((element) => {
             this.roles.push({
               value: element.id,
               label: element.name,
@@ -83,7 +96,6 @@ export class UserDetailComponent implements OnInit, OnDestroy {
           this.toggleBlockUI(false);
         },
       });
-
   }
 
   public async GetFileFromFirebase(fileName: string) {
@@ -103,7 +115,9 @@ export class UserDetailComponent implements OnInit, OnDestroy {
       .subscribe({
         next: async (response: UserDto) => {
           this.selectedEntity = response;
-          this.selectedEntity.avatar = await this.GetFileFromFirebase(response.avatar);
+          this.selectedEntity.avatar = await this.GetFileFromFirebase(
+            response.avatar
+          );
           this.buildForm();
           this.setMode('update');
 
@@ -124,7 +138,8 @@ export class UserDetailComponent implements OnInit, OnDestroy {
       { type: 'required', message: 'Bạn phải nhập mật khẩu' },
       {
         type: 'pattern',
-        message: 'Mật khẩu ít nhất 8 ký tự, ít nhất 1 số, 1 ký tự đặc biệt, và một chữ hoa',
+        message:
+          'Mật khẩu ít nhất 8 ký tự, ít nhất 1 số, 1 ký tự đặc biệt, và một chữ hoa',
       },
     ],
     phoneNumber: [{ type: 'required', message: 'Bạn phải nhập số điện thoại' }],
@@ -138,7 +153,7 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   private saveData() {
     this.toggleBlockUI(true);
     if (this.utilService.isEmpty(this.config.data?.id)) {
-      this.userService                 //Create
+      this.userService //Create
         .userPOST(this.form.value)
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe({
@@ -199,11 +214,20 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     this.form = this.fb.group({
       avatar: new FormControl(this.selectedEntity.avatar || null),
       fileImage: new FormControl(null),
-      userName: new FormControl(this.selectedEntity.userName || null,Validators.required),
-      email: new FormControl(this.selectedEntity.email || null,Validators.required),
+      userName: new FormControl(
+        this.selectedEntity.userName || null,
+        Validators.required
+      ),
+      email: new FormControl(
+        this.selectedEntity.email || null,
+        Validators.required
+      ),
       phoneNumber: new FormControl(this.selectedEntity.phoneNumber || null),
       birthDay: new FormControl(this.selectedEntity.birthDay || null),
-      fullName: new FormControl(this.selectedEntity.fullName || null,Validators.required),
+      fullName: new FormControl(
+        this.selectedEntity.fullName || null,
+        Validators.required
+      ),
       password: new FormControl(
         null,
         Validators.compose([
@@ -219,7 +243,7 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   onFileChange(event: any) {
     const file = event.target.files[0];
     if (file) {
-        this.form.get('fileImage').setValue(file);
+      this.form.get('fileImage').setValue(file);
       // Đọc dữ liệu của file thành URL cho việc hiển thị ảnh trước
       const reader = new FileReader();
       reader.onload = (e: any) => {
@@ -228,7 +252,5 @@ export class UserDetailComponent implements OnInit, OnDestroy {
       };
       reader.readAsDataURL(file);
     }
-
   }
-
 }

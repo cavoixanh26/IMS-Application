@@ -22,6 +22,15 @@ import { Milestone, Label } from '../../../api/custom-api-generate';
   templateUrl: './issue-detail.component.html',
 })
 export class IssueDetailComponent implements OnInit, OnDestroy {
+  public page: number = 1;
+  public itemsPerPage: number = 10;
+  public totalCount: number;
+  public keyWords: string;
+  public skip: number | null;
+  public take: number | null;
+  public sortField: string | null;
+
+  
   private ngUnsubscribe = new Subject<void>();
 
   public milestoneList: any[] = [];
@@ -142,9 +151,7 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
           Validators.minLength(3),
         ])
       ),
-      projectId: new FormControl(
-        1
-      ),
+      projectId: new FormControl(1),
       assigneeId: new FormControl('9e224968-33e4-4652-b7b7-8574d048cdb9'),
       isOpen: new FormControl(this.selectedEntity.isOpen || null),
       milestoneId: new FormControl(this.selectedEntity.milestoneId || null),
@@ -168,7 +175,16 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
 
   loadMileStone() {
     this.milestoneService
-      .milestone()
+      .milestone(
+        undefined,
+        undefined,
+        this.keyWords,
+        this.page,
+        this.itemsPerPage,
+        this.skip,
+        this.take,
+        this.sortField
+      )
       .subscribe((response: MilestoneResponse) => {
         response.milestones.forEach((s) => {
           this.milestoneList.push({

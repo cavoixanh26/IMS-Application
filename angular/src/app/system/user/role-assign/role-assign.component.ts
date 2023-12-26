@@ -6,9 +6,9 @@ import { RoleClient, RoleDto, RoleResponse, UserClient, UserDto } from 'src/app/
 @Component({
   selector: 'app-role-assign',
   templateUrl: './role-assign.component.html',
-  styleUrls: ['./role-assign.component.css']
+  styleUrls: ['./role-assign.component.css'],
 })
-export class RoleAssignComponent implements OnInit, OnDestroy{
+export class RoleAssignComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<void>();
 
   // Default
@@ -20,7 +20,13 @@ export class RoleAssignComponent implements OnInit, OnDestroy{
   public availableRoles: string[] = [];
   public seletedRoles: string[] = [];
   formSavedEventEmitter: EventEmitter<any> = new EventEmitter();
-
+  public page: number = 1;
+  public itemsPerPage: number = 5;
+  public totalCount: number;
+  public keyWords: string | null;
+  public skip: number | null;
+  public take: number | null;
+  public sortField: string | null;
   constructor(
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
@@ -37,12 +43,20 @@ export class RoleAssignComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit() {
-    this.roleService.all()
+    this.roleService
+      .roleGET(
+        this.keyWords,
+        this.page,
+        this.itemsPerPage,
+        this.skip,
+        this.take,
+        this.sortField
+      )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (repsonse: any) => {
           var roles = repsonse.roles as RoleDto[];
-          roles.forEach(element => {
+          roles.forEach((element) => {
             this.availableRoles.push(element.name);
           });
           this.loadDetail(this.config.data.id);
@@ -64,7 +78,9 @@ export class RoleAssignComponent implements OnInit, OnDestroy{
       .subscribe({
         next: (response: UserDto) => {
           this.seletedRoles = response.roles;
-          this.availableRoles = this.availableRoles.filter(x => !this.seletedRoles.includes(x));
+          this.availableRoles = this.availableRoles.filter(
+            (x) => !this.seletedRoles.includes(x)
+          );
           this.toggleBlockUI(false);
         },
         error: () => {

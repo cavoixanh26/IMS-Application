@@ -9,6 +9,7 @@ import {
   API_BASE_URL,
   AuthClient,
   RoleClient,
+  SubjectClient,
   UserClient,
 } from './api/api-generate';
 import { UserClientCustom } from './api/custom-api-generate';
@@ -84,6 +85,7 @@ import { TokenInterceptor } from './shared/services/token.interceptor';
     AuthClient,
     UserClient,
     RoleClient,
+    SubjectClient,
     DialogService,
     MessageService,
     NotificationService,

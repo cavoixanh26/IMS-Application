@@ -65,7 +65,6 @@ export class UserComponent implements OnInit, OnDestroy {
     this.toggleBlockUI(true);
     this.userService
       .users(
-        undefined,undefined,
         this.keyWords,
         this.page,
         this.itemsPerPage,

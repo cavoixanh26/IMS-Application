@@ -53,14 +53,21 @@ export class RoleComponent implements OnInit, OnDestroy {
     this.toggleBlockUI(true);
 
     this.roleService
-    .all(this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
+      .roleGET(
+        this.keyWords,
+        this.page,
+        this.itemsPerPage,
+        this.skip,
+        this.take,
+        this.sortField
+      )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (response: RoleResponse) => {
           this.items = response.roles;
           this.totalCount = response.page.toTalRecord;
           if (selectionId != null && this.items.length > 0) {
-            this.selectedItems = this.items.filter(x => x.id == selectionId);
+            this.selectedItems = this.items.filter((x) => x.id == selectionId);
           }
 
           this.toggleBlockUI(false);
