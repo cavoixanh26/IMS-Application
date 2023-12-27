@@ -29,8 +29,8 @@ public class SubjectService : ServiceBase<Subject>, ISubjectService
     public async Task<SubjectDto> CreateSubject(CreateUpdateSubjectDto request)
     {
         var checkExistSubject = await context.Subjects
-            .AnyAsync(x => x.Name.Equals(request.Name));
-        if (checkExistSubject)
+            .FirstOrDefaultAsync(x => x.Name.Equals(request.Name));
+        if (checkExistSubject != null)
         {
             throw HttpException.BadRequestException("Subject's name exist");
         }
@@ -53,6 +53,7 @@ public class SubjectService : ServiceBase<Subject>, ISubjectService
     public async Task<SubjectReponse> GetSubjectAllAsync(SubjectRequest request, string userId)
     {
         var subjects = await context.Subjects
+            .Include(x => x.Manager)
             .Where(x => (string.IsNullOrEmpty(userId) || x.ManagerId.ToString() == userId) 
                     && string.IsNullOrWhiteSpace(request.KeyWords)
                     || x.Name.Contains(request.KeyWords)

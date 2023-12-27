@@ -33,7 +33,9 @@ public class MappingProfile : Profile
 
         //Subject 
         CreateMap<CreateUpdateSubjectDto, Subject>().ReverseMap();
-        CreateMap<SubjectDto, Subject>().ReverseMap();
+        CreateMap<Subject, SubjectDto>()
+			.ForMember(dest => dest.ManagerName, opt => opt.MapFrom(src => src.Manager != null ? src.Manager.Email : null))
+			.ReverseMap();
 
 		// setting
 		CreateMap<SettingDto, Setting>().ReverseMap();

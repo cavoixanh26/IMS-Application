@@ -2,7 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
-import { SubjectClient, SubjectDto, SubjectReponse } from 'src/app/api/api-generate';
+import {
+  SubjectClient,
+  SubjectDto,
+  SubjectReponse,
+} from 'src/app/api/api-generate';
 import { NotificationService } from 'src/app/shared/services/notification.service';
 import { SubjectDetailComponent } from './subject-detail/subject-detail.component';
 import { MessageConstants } from 'src/app/shared/constants/message.const';
@@ -21,24 +25,23 @@ interface ExportColumn {
   selector: 'app-subject',
   templateUrl: './subject.component.html',
 })
-export class SubjectComponent implements OnInit,OnDestroy {
+export class SubjectComponent implements OnInit, OnDestroy {
   //System variables
   private ngUnsubscribe = new Subject<void>();
   public blockedPanel: boolean = false;
   exportColumns!: ExportColumn[];
-   //Paging variables
-   public page: number = 1;
-   public itemsPerPage: number = 5;
-   public totalCount: number;
-   public keyWords: string |  null;
-   public skip: number | null;
-   public take: number | null;
-   public sortField: string | null;
+  //Paging variables
+  public page: number = 1;
+  public itemsPerPage: number = 10;
+  public totalCount: number;
+  public keyWords: string | null;
+  public skip: number | null;
+  public take: number | null;
+  public sortField: string | null;
 
   //Api variables
   public items: SubjectDto[];
   public selectedItems: SubjectDto[] = [];
-
 
   constructor(
     private subjectService: SubjectClient,
@@ -46,9 +49,8 @@ export class SubjectComponent implements OnInit,OnDestroy {
     private notificationService: NotificationService,
     private confirmationService: ConfirmationService,
     private router: Router,
-    private utilService : UtilityService,
-  ) { }
-
+    private utilService: UtilityService
+  ) {}
 
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
@@ -63,14 +65,21 @@ export class SubjectComponent implements OnInit,OnDestroy {
     this.toggleBlockUI(true);
 
     this.subjectService
-    .subjectGET2(this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
+      .subjectGET2(
+        this.keyWords,
+        this.page,
+        this.itemsPerPage,
+        this.skip,
+        this.take,
+        this.sortField
+      )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (response: SubjectReponse) => {
           this.items = response.subjects;
           this.totalCount = response.page.toTalRecord;
           if (selectionId != null && this.items.length > 0) {
-            this.selectedItems = this.items.filter(x => x.id == selectionId);
+            this.selectedItems = this.items.filter((x) => x.id == selectionId);
           }
 
           this.toggleBlockUI(false);
@@ -98,7 +107,9 @@ export class SubjectComponent implements OnInit,OnDestroy {
 
   showEditModal() {
     if (this.selectedItems.length == 0) {
-      this.notificationService.showError(MessageConstants.NOT_CHOOSE_ANY_RECORD);
+      this.notificationService.showError(
+        MessageConstants.NOT_CHOOSE_ANY_RECORD
+      );
       return;
     }
     var id = this.selectedItems[0].id;
@@ -121,11 +132,13 @@ export class SubjectComponent implements OnInit,OnDestroy {
 
   deleteItems() {
     if (this.selectedItems.length == 0) {
-      this.notificationService.showError(MessageConstants.NOT_CHOOSE_ANY_RECORD);
+      this.notificationService.showError(
+        MessageConstants.NOT_CHOOSE_ANY_RECORD
+      );
       return;
     }
     var ids = [];
-    this.selectedItems.forEach(element => {
+    this.selectedItems.forEach((element) => {
       ids.push(element.id);
     });
     this.confirmationService.confirm({
@@ -177,35 +190,45 @@ export class SubjectComponent implements OnInit,OnDestroy {
   }
 
   showDetail(subjectDto: SubjectDto) {
-    let url: string = "detail/" + subjectDto.id;
+    let url: string = 'detail/' + subjectDto.id;
     this.utilService.navigate(url);
   }
   exportPdf() {
     import('jspdf').then((jsPDF) => {
-        import('jspdf-autotable').then((x) => {
-            const doc = new jsPDF.default('p', 'px', 'a4');
-            (doc as any).autoTable(this.exportColumns, this.items);
-            doc.save('products.pdf');
-        });
+      import('jspdf-autotable').then((x) => {
+        const doc = new jsPDF.default('p', 'px', 'a4');
+        (doc as any).autoTable(this.exportColumns, this.items);
+        doc.save('products.pdf');
+      });
     });
-}
+  }
 
   exportExcel() {
     import('xlsx').then((xlsx) => {
-        const worksheet = xlsx.utils.json_to_sheet(this.items);
-        const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
-        const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-        this.saveAsExcelFile(excelBuffer, 'products');
+      const worksheet = xlsx.utils.json_to_sheet(this.items);
+      const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+      const excelBuffer: any = xlsx.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+      this.saveAsExcelFile(excelBuffer, 'products');
     });
-}
+  }
 
-saveAsExcelFile(buffer: any, fileName: string): void {
-  let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-  let EXCEL_EXTENSION = '.xlsx';
-  const data: Blob = new Blob([buffer], {
-      type: EXCEL_TYPE
-  });
-  FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
-}
+  saveAsExcelFile(buffer: any, fileName: string): void {
+    let EXCEL_TYPE =
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    let EXCEL_EXTENSION = '.xlsx';
+    const data: Blob = new Blob([buffer], {
+      type: EXCEL_TYPE,
+    });
+    FileSaver.saveAs(
+      data,
+      fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION
+    );
+  }
 
+  showAssigneeModal(subjectId: number) {
+    
+  }
 }

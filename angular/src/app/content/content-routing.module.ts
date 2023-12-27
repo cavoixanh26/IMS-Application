@@ -28,7 +28,7 @@ const routes: Routes = [
     component: MilestoneComponent,
   },
   {
-    path: 'subject/detail/:id',
+    path: 'subject/:id',
     component: SubjectDetailComponent,
   },
   {

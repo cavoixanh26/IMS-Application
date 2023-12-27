@@ -3679,7 +3679,7 @@ export interface CreateUpdateSetting {
 export interface CreateUpdateSubjectDto {
     name?: string | undefined;
     description?: string | undefined;
-    isActive?: boolean;
+    isActive?: boolean | undefined;
 }
 
 export interface CreateUserDto {
@@ -3922,6 +3922,7 @@ export interface SubjectDto {
     name?: string | undefined;
     description?: string | undefined;
     managerId?: string | undefined;
+    managerName?: string | undefined;
 }
 
 export interface SubjectReponse {

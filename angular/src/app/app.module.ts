@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { AppLayoutModule } from './layout/app.layout.module';
 import {
   API_BASE_URL,
+  AssignmentClient,
   AuthClient,
   RoleClient,
   SubjectClient,
@@ -86,6 +87,7 @@ import { TokenInterceptor } from './shared/services/token.interceptor';
     UserClient,
     RoleClient,
     SubjectClient,
+    AssignmentClient,
     DialogService,
     MessageService,
     NotificationService,

@@ -73,6 +73,7 @@ export class SubjectModalComponent implements OnInit,OnDestroy {
         ])
       ),
       description: new FormControl(this.selectedEntity.description || null),
+      isActive: true,
     });
   }
   saveChange() {
