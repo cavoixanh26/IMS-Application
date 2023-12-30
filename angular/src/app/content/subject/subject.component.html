@@ -117,7 +117,14 @@
         ></button>
       </p-accordionTab>
     </p-accordion>
-
+    <!-- paging -->
+    <p-paginator
+      [rows]="itemsPerPage"
+      [totalRecords]="totalCount"
+      (onPageChange)="pageChanged($event)"
+      [rowsPerPageOptions]="[5, 10, 50, 100]"
+    ></p-paginator>
+    <!-- paging -->
     <p-blockUI [target]="pnl" [blocked]="blockedPanel">
       <p-progressSpinner
         [style]="{

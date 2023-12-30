@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { AuthClient, ClassClient, ClassDto, SettingClient, SettingResponse, SubjectClient, SubjectReponse, UserClient, UserResponse } from 'src/app/api/api-generate';
 import { UtilityService } from 'src/app/shared/services/utility.service';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { SettingType } from '../../../api/api-generate';
 
 @Component({
   selector: 'app-class-modal',
@@ -50,7 +51,7 @@ export class ClassModalComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.loadAssignees();
+    this.loadTeacher();
     this.loadSettings();
     this.loadSubjects();
     this.buildForm();
@@ -98,7 +99,6 @@ export class ClassModalComponent implements OnInit, OnDestroy {
       description: new FormControl(this.selectedEntity.description || null),
       assigneeId: new FormControl(
         this.selectedEntity.assigneeId || null,
-        Validators.required
       ),
       subjectId: new FormControl(
         this.selectedEntity.subjectId || null,
@@ -112,8 +112,6 @@ export class ClassModalComponent implements OnInit, OnDestroy {
   }
 
   saveChange() {
-    this.toggleBlockUI(true);
-
     this.saveData();
   }
 
@@ -122,17 +120,25 @@ export class ClassModalComponent implements OnInit, OnDestroy {
       this.classService
         .classPOST(this.form.value)
         .pipe(takeUntil(this.ngUnsubscribe))
-        .subscribe(() => {
-          this.ref.close(this.form.value);
-          this.toggleBlockUI(false);
+        .subscribe({
+          next : () => {
+            this.ref.close(true);
+          },
+          error: () => {
+            this.ref.close(false);
+          }
         });
     } else {
       this.classService
         .classPUT(this.config.data.id, this.form.value)
         .pipe(takeUntil(this.ngUnsubscribe))
-        .subscribe(() => {
-          this.toggleBlockUI(false);
-          this.ref.close(this.form.value);
+        .subscribe({
+          next: () => {
+            this.ref.close(this.form.value);
+          },
+          error: () => {
+            this.ref.close(null);
+          }
         });
     }
   }
@@ -159,7 +165,7 @@ export class ClassModalComponent implements OnInit, OnDestroy {
   loadSettings() {
     this.settingService
       .settingGET(
-        undefined,
+        SettingType._1,
         this.keyWords,
         this.page,
         this.itemsPerPage,
@@ -176,7 +182,7 @@ export class ClassModalComponent implements OnInit, OnDestroy {
         });
       });
   }
-  loadAssignees() {
+  loadTeacher() {
     this.userService
       .users(
         this.keyWords,

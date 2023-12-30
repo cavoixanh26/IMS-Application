@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using IMS.BusinessService.Constants;
 using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Classes;
 using IMS.Contract.Contents.Projects;
@@ -15,18 +16,11 @@ namespace IMS.Api.APIControllers.Contents;
 [Authorize]
 public class ClassController : BaseController<IClassService>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    public readonly IMapper _mapper;
-
     public ClassController(
-        IClassService service, 
-        IMapper mapper, 
-        IUnitOfWork unitOfWork,
+        IClassService service,
         UserManager<AppUser> userManager)
         : base(service, userManager)
     {
-        _mapper = mapper;
-        _unitOfWork = unitOfWork;
     }
 
 
@@ -47,29 +41,18 @@ public class ClassController : BaseController<IClassService>
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateNewClass([FromBody] CreateAndUpdateClassDto data)
+    [Authorize(Roles = $"{RoleDefault.Admin}, {RoleDefault.Manager}")]
+    public async Task<IActionResult> CreateNewClass([FromBody] CreateAndUpdateClassDto request)
     {
-        var map = _mapper.Map<Class>(data);
-        var result = await service.InsertAsync(map);
-        await _unitOfWork.SaveChangesAsync();
-        return Ok("Add successfully ");
+        var response = await service.CreateClass(request);
+        return Ok(response);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateClass(int id, [FromBody] CreateAndUpdateClassDto input)
     {
-        var data = await service.GetById(id);
-        if (data == null)
-        {
-            return BadRequest();
-        }
-        else
-        {
-            var map = _mapper.Map(input, data);
-            var result = await service.UpdateAsync(map);
-            await _unitOfWork.SaveChangesAsync();
-            return Ok("Update Successfully ");
-        }
+        var response = await service.UpdateClass(id, input);
+        return Ok(response);
     }
 
 }

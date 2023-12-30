@@ -13,5 +13,7 @@ namespace IMS.Contract.Contents.Classes
     {
         Task<ClassReponse> GetClasses(ClassRequest request, AppUser currentUser);
         Task<ClassDto> GetClassById(int classId);
+        Task<ClassDto> CreateClass(CreateAndUpdateClassDto request);
+        Task<ClassDto> UpdateClass(int id, CreateAndUpdateClassDto request);
     }
 }

@@ -32,7 +32,7 @@ export class SubjectComponent implements OnInit, OnDestroy {
   exportColumns!: ExportColumn[];
   //Paging variables
   public page: number = 1;
-  public itemsPerPage: number = 10;
+  public itemsPerPage: number = 5;
   public totalCount: number;
   public keyWords: string | null;
   public skip: number | null;
@@ -228,7 +228,14 @@ export class SubjectComponent implements OnInit, OnDestroy {
     );
   }
 
-  showAssigneeModal(subjectId: number) {
-    
+  showAssigneeModal(subjectId: number) {}
+
+  pageChanged(event: any) {
+    this.page = event.page + 1;
+    this.itemsPerPage = event.rows;
+    this.loadData({
+      page: this.page,
+      itemsPerPage: this.itemsPerPage,
+    });
   }
 }

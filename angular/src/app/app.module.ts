@@ -9,7 +9,9 @@ import {
   API_BASE_URL,
   AssignmentClient,
   AuthClient,
+  ClassClient,
   RoleClient,
+  SettingClient,
   SubjectClient,
   UserClient,
 } from './api/api-generate';
@@ -88,6 +90,8 @@ import { TokenInterceptor } from './shared/services/token.interceptor';
     RoleClient,
     SubjectClient,
     AssignmentClient,
+    ClassClient,
+    SettingClient,
     DialogService,
     MessageService,
     NotificationService,

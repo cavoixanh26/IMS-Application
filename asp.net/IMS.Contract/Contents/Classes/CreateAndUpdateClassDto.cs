@@ -12,6 +12,6 @@ namespace IMS.Contract.Contents.Classes
         public string? Description { get; set; }
         public int SubjectId { get; set; }
         public int SettingId { get; set; }
-        public Guid AssigneId { get; set; }
+        public Guid? AssigneeId { get; set; }
     }
 }

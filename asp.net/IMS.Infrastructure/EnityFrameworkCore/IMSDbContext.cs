@@ -34,7 +34,9 @@ namespace IMS.Infrastructure.EnityFrameworkCore
         {
             base.OnModelCreating(builder);
             builder.SeedData();
-            
+            builder.SeedSemester();
+            builder.SeedSubject();
+            builder.SeedClass();
         }
 
         public virtual async Task<int> SaveChangesAsync(string username = "SYSTEM")

@@ -109,7 +109,7 @@ constructor(
   loadSettings() {
     this.settingService
       .settingGET(
-        undefined,
+        SettingType._1,
         this.keyWords,
         this.page,
         this.itemsPerPage,
@@ -119,7 +119,6 @@ constructor(
       )
       .subscribe((response: SettingResponse) => {
         this.settingList = response.settings
-          .filter((setting) => setting.type === SettingType._1)
           .map((setting) => ({
             label: setting.name,
             value: setting.id,
@@ -138,15 +137,17 @@ constructor(
       width: '70%',
     });
 
-    ref.onClose.subscribe((data: ClassDto) => {
-      if (data) {
+    ref.onClose.subscribe((isSuccess: boolean) => {
+      if (isSuccess == true) {
         this.notificationService.showSuccess(MessageConstants.CREATED_OK_MSG);
         this.selectedItem = null;
         this.loadData();
       }
+      if(isSuccess == false) {
+        this.notificationService.showError(MessageConstants.CREATED_FALL_MSG);
+      }
     });
   }
-
 
 
   showEditModal(id: number) {
@@ -163,6 +164,9 @@ constructor(
         this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
         this.selectedItem = null;
         this.loadData(data.id);
+      }
+      if (data === null) {
+        this.notificationService.showError(MessageConstants.UPDATED_FALL_MSG);
       }
     });
   }

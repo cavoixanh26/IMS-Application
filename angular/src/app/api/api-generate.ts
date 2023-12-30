@@ -15,40 +15,8 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
-export interface IAssignmentClient {
-    /**
-     * @param subjectId (optional) 
-     * @param keyWords (optional) 
-     * @param page (optional) 
-     * @param itemsPerPage (optional) 
-     * @param skip (optional) 
-     * @param take (optional) 
-     * @param sortField (optional) 
-     * @return Success
-     */
-    assignments(subjectId: number | undefined, keyWords: string | undefined, page: number | undefined, itemsPerPage: number | undefined, skip: number | undefined, take: number | undefined, sortField: string | undefined): Observable<AssignmentResponse>;
-    /**
-     * @return Success
-     */
-    assignmentGET(id: number): Observable<AssignmentDTO>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    assignmentPUT(id: number, body: CreateUpdateAssignmentDTO | undefined): Observable<void>;
-    /**
-     * @return Success
-     */
-    deleteAssignment(id: number): Observable<void>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    assignmentPOST(body: CreateUpdateAssignmentDTO | undefined): Observable<void>;
-}
-
 @Injectable()
-export class AssignmentClient implements IAssignmentClient {
+export class AssignmentClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -354,37 +322,8 @@ export class AssignmentClient implements IAssignmentClient {
     }
 }
 
-export interface IAuthClient {
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    login(body: LoginModel | undefined): Observable<AuthResponse>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    register(body: RegisterModel | undefined): Observable<void>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    authenWithOauth2(body: OauthRequest | undefined): Observable<Token>;
-    /**
-     * @param token (optional) 
-     * @param email (optional) 
-     * @return Success
-     */
-    confirmEmail(token: string | undefined, email: string | undefined): Observable<void>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    loginWithGoogle(body: string | undefined): Observable<void>;
-}
-
 @Injectable()
-export class AuthClient implements IAuthClient {
+export class AuthClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -666,37 +605,8 @@ export class AuthClient implements IAuthClient {
     }
 }
 
-export interface IClassClient {
-    /**
-     * @param settingId (optional) 
-     * @param subjectId (optional) 
-     * @param keyWords (optional) 
-     * @param page (optional) 
-     * @param itemsPerPage (optional) 
-     * @param skip (optional) 
-     * @param take (optional) 
-     * @param sortField (optional) 
-     * @return Success
-     */
-    classGET(settingId: number | undefined, subjectId: number | undefined, keyWords: string | undefined, page: number | undefined, itemsPerPage: number | undefined, skip: number | undefined, take: number | undefined, sortField: string | undefined): Observable<ClassReponse>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    classPOST(body: CreateAndUpdateClassDto | undefined): Observable<void>;
-    /**
-     * @return Success
-     */
-    classGET2(id: number): Observable<ProjectReponse>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    classPUT(id: number, body: CreateAndUpdateClassDto | undefined): Observable<void>;
-}
-
 @Injectable()
-export class ClassClient implements IClassClient {
+export class ClassClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -957,47 +867,8 @@ export class ClassClient implements IClassClient {
     }
 }
 
-export interface IIssueClient {
-    /**
-     * @param id (optional) 
-     * @param assigneeId (optional) 
-     * @param projectId (optional) 
-     * @param issueSettingId (optional) 
-     * @param milestoneId (optional) 
-     * @param startDate (optional) 
-     * @param dueDate (optional) 
-     * @param keyWords (optional) 
-     * @param page (optional) 
-     * @param itemsPerPage (optional) 
-     * @param skip (optional) 
-     * @param take (optional) 
-     * @param sortField (optional) 
-     * @return Success
-     */
-    issue(id: number | undefined, assigneeId: string | undefined, projectId: number | undefined, issueSettingId: number | undefined, milestoneId: number | undefined, startDate: Date | undefined, dueDate: Date | undefined, keyWords: string | undefined, page: number | undefined, itemsPerPage: number | undefined, skip: number | undefined, take: number | undefined, sortField: string | undefined): Observable<IssueResponse>;
-    /**
-     * @param id (optional) 
-     * @return Success
-     */
-    id(id: number | undefined): Observable<IssueDto>;
-    /**
-     * @return Success
-     */
-    deleteIssue(id: number): Observable<void>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    issuePOST(body: CreateUpdateIssueDto | undefined): Observable<void>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    issuePUT(id: number, body: CreateUpdateIssueDto | undefined): Observable<void>;
-}
-
 @Injectable()
-export class IssueClient implements IIssueClient {
+export class IssueClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -1335,41 +1206,8 @@ export class IssueClient implements IIssueClient {
     }
 }
 
-export interface IMilestoneClient {
-    /**
-     * @param projectId (optional) 
-     * @param classId (optional) 
-     * @param keyWords (optional) 
-     * @param page (optional) 
-     * @param itemsPerPage (optional) 
-     * @param skip (optional) 
-     * @param take (optional) 
-     * @param sortField (optional) 
-     * @return Success
-     */
-    milestone(projectId: number | undefined, classId: number | undefined, keyWords: string | undefined, page: number | undefined, itemsPerPage: number | undefined, skip: number | undefined, take: number | undefined, sortField: string | undefined): Observable<MilestoneResponse>;
-    /**
-     * @return Success
-     */
-    milestoneGET(id: number): Observable<MilestoneDto>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    milestonePUT(id: number, body: UpdateMilestoneDto | undefined): Observable<void>;
-    /**
-     * @return Success
-     */
-    deleteMilestone(id: number): Observable<void>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    milestonePOST(body: CreateMilestoneDto | undefined): Observable<void>;
-}
-
 @Injectable()
-export class MilestoneClient implements IMilestoneClient {
+export class MilestoneClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -1680,37 +1518,8 @@ export class MilestoneClient implements IMilestoneClient {
     }
 }
 
-export interface IProjectClient {
-    /**
-     * @param classId (optional) 
-     * @param keyWords (optional) 
-     * @param page (optional) 
-     * @param itemsPerPage (optional) 
-     * @param skip (optional) 
-     * @param take (optional) 
-     * @param sortField (optional) 
-     * @return Success
-     */
-    projectGET(classId: number | undefined, keyWords: string | undefined, page: number | undefined, itemsPerPage: number | undefined, skip: number | undefined, take: number | undefined, sortField: string | undefined): Observable<ProjectReponse>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    projectPOST(body: CreateAndUpdateProjectDto | undefined): Observable<void>;
-    /**
-     * @param projectId (optional) 
-     * @return Success
-     */
-    projectId(projectId: number | undefined): Observable<ProjectReponse>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    projectPUT(id: number, body: CreateAndUpdateProjectDto | undefined): Observable<void>;
-}
-
 @Injectable()
-export class ProjectClient implements IProjectClient {
+export class ProjectClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -1968,49 +1777,8 @@ export class ProjectClient implements IProjectClient {
     }
 }
 
-export interface IRoleClient {
-    /**
-     * @param keyWords (optional) 
-     * @param page (optional) 
-     * @param itemsPerPage (optional) 
-     * @param skip (optional) 
-     * @param take (optional) 
-     * @param sortField (optional) 
-     * @return Success
-     */
-    roleGET(keyWords: string | undefined, page: number | undefined, itemsPerPage: number | undefined, skip: number | undefined, take: number | undefined, sortField: string | undefined): Observable<RoleResponse>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    rolePOST(body: CreateUpdateRoleDto | undefined): Observable<void>;
-    /**
-     * @param ids (optional) 
-     * @return Success
-     */
-    roleDELETE(ids: string[] | undefined): Observable<void>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    rolePUT(id: string, body: CreateUpdateRoleDto | undefined): Observable<void>;
-    /**
-     * @return Success
-     */
-    roleGET2(id: string): Observable<RoleDto>;
-    /**
-     * @return Success
-     */
-    permissionsGET(roleId: string): Observable<PermissionDto>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    permissionsPUT(body: PermissionDto | undefined): Observable<void>;
-}
-
 @Injectable()
-export class RoleClient implements IRoleClient {
+export class RoleClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -2418,40 +2186,8 @@ export class RoleClient implements IRoleClient {
     }
 }
 
-export interface ISettingClient {
-    /**
-     * @param type (optional) 
-     * @param keyWords (optional) 
-     * @param page (optional) 
-     * @param itemsPerPage (optional) 
-     * @param skip (optional) 
-     * @param take (optional) 
-     * @param sortField (optional) 
-     * @return Success
-     */
-    settingGET(type: SettingType | undefined, keyWords: string | undefined, page: number | undefined, itemsPerPage: number | undefined, skip: number | undefined, take: number | undefined, sortField: string | undefined): Observable<SettingResponse>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    settingPOST(body: CreateUpdateSetting | undefined): Observable<SettingDto>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    settingPUT(id: number, body: CreateUpdateSetting | undefined): Observable<SettingDto>;
-    /**
-     * @return Success
-     */
-    settingDELETE(id: number): Observable<void>;
-    /**
-     * @return Success
-     */
-    settingGET2(id: number): Observable<SettingDto>;
-}
-
 @Injectable()
-export class SettingClient implements ISettingClient {
+export class SettingClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -2763,40 +2499,8 @@ export class SettingClient implements ISettingClient {
     }
 }
 
-export interface ISubjectClient {
-    /**
-     * @return Success
-     */
-    subjectGET(id: number): Observable<SubjectDto>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    subjectPUT(id: number, body: CreateUpdateSubjectDto | undefined): Observable<void>;
-    /**
-     * @param keyWords (optional) 
-     * @param page (optional) 
-     * @param itemsPerPage (optional) 
-     * @param skip (optional) 
-     * @param take (optional) 
-     * @param sortField (optional) 
-     * @return Success
-     */
-    subjectGET2(keyWords: string | undefined, page: number | undefined, itemsPerPage: number | undefined, skip: number | undefined, take: number | undefined, sortField: string | undefined): Observable<SubjectReponse>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    subjectPOST(body: CreateUpdateSubjectDto | undefined): Observable<void>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    assignSubject(body: AssignSubject | undefined): Observable<void>;
-}
-
 @Injectable()
-export class SubjectClient implements ISubjectClient {
+export class SubjectClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -3099,50 +2803,8 @@ export class SubjectClient implements ISubjectClient {
     }
 }
 
-export interface IUserClient {
-    /**
-     * @param keyWords (optional) 
-     * @param page (optional) 
-     * @param itemsPerPage (optional) 
-     * @param skip (optional) 
-     * @param take (optional) 
-     * @param sortField (optional) 
-     * @return Success
-     */
-    users(keyWords: string | undefined, page: number | undefined, itemsPerPage: number | undefined, skip: number | undefined, take: number | undefined, sortField: string | undefined): Observable<UserResponse>;
-    /**
-     * @param userId (optional) 
-     * @param body (optional) 
-     * @return Success
-     */
-    assignRoles(userId: string | undefined, body: string[] | undefined): Observable<void>;
-    /**
-     * @return Success
-     */
-    deleteUser(id: string): Observable<void>;
-    /**
-     * @return Success
-     */
-    userGET(id: string): Observable<UserDto>;
-    /**
-     * @param fullName (optional) 
-     * @param birthDay (optional) 
-     * @param avatar (optional) 
-     * @param address (optional) 
-     * @param phoneNumber (optional) 
-     * @param fileImage (optional) 
-     * @return Success
-     */
-    userPUT(id: string, fullName: string | undefined, birthDay: Date | undefined, avatar: string | undefined, address: string | undefined, phoneNumber: string | undefined, fileImage: FileParameter | undefined): Observable<void>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    userPOST(body: CreateUserDto | undefined): Observable<void>;
-}
-
 @Injectable()
-export class UserClient implements IUserClient {
+export class UserClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -3596,9 +3258,12 @@ export interface ClassDto {
     id?: number;
     name?: string | undefined;
     assigneeId?: string | undefined;
+    teacherName?: string | undefined;
     description?: string | undefined;
     subjectId?: number;
+    subjectName?: string | undefined;
     settingId?: number;
+    semester?: string | undefined;
     classStudents?: ClassStudent[] | undefined;
     milestones?: Milestone[] | undefined;
     projects?: Project[] | undefined;
@@ -3628,7 +3293,7 @@ export interface CreateAndUpdateClassDto {
     description?: string | undefined;
     subjectId?: number;
     settingId?: number;
-    assigneId?: string;
+    assigneeId?: string | undefined;
 }
 
 export interface CreateAndUpdateProjectDto {
@@ -3679,7 +3344,7 @@ export interface CreateUpdateSetting {
 export interface CreateUpdateSubjectDto {
     name?: string | undefined;
     description?: string | undefined;
-    isActive?: boolean | undefined;
+    isActive?: boolean;
 }
 
 export interface CreateUserDto {

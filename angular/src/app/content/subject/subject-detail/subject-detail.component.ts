@@ -1,13 +1,14 @@
 import { Subject, takeUntil } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AssignmentClient, AssignmentDTO, AssignmentResponse, SubjectClient, SubjectReponse } from 'src/app/api/api-generate';
+import { AssignmentClient, AssignmentDTO, AssignmentResponse, ClassClient, ClassDto, ClassReponse, SubjectClient, SubjectReponse } from 'src/app/api/api-generate';
 import { DialogService } from 'primeng/dynamicdialog';
 import { NotificationService } from 'src/app/shared/services/notification.service';
 import { ConfirmationService } from 'primeng/api';
 import { UtilityService } from 'src/app/shared/services/utility.service';
 import { MessageConstants } from 'src/app/shared/constants/message.const';
 import { AssignmentDetailComponent } from './assignment-detail/assignment-detail.component';
+import { SubjectDto } from '../../../api/api-generate';
 
 @Component({
   selector: 'app-subject-detail',
@@ -27,11 +28,15 @@ export class SubjectDetailComponent implements OnInit ,OnDestroy {
    public keyWords: string |  null;
    public skip: number | null;
    public take: number | null;
-   public sortField: string | null;
+  public sortField: string | null;
+  
+  public settingId: number | null;
 
   //Api variables
-  public items: AssignmentDTO[];
+  public items: ClassDto[];
   public selectedItems: AssignmentDTO[] = [];
+
+  public subjectDto: SubjectDto;
 
   constructor(private activatedRoute: ActivatedRoute,
     private subjectService: SubjectClient,
@@ -39,6 +44,7 @@ export class SubjectDetailComponent implements OnInit ,OnDestroy {
     private assignmentService : AssignmentClient,
     private notificationService: NotificationService,
     private confirmationService: ConfirmationService,
+    private classService: ClassClient,
     private router: Router,
     private utilService : UtilityService,
     ) {
@@ -47,29 +53,63 @@ export class SubjectDetailComponent implements OnInit ,OnDestroy {
   ngOnInit() {
 
     this.subjectId = this.activatedRoute.snapshot.paramMap.get('id');
+    this.getSubjectById(this.subjectId);
+    this.loadClassBySubjectId(this.subjectId);
     this.loadData();
   }
 
-  loadData(selectionId = null) {
-    this.toggleBlockUI(true);
 
-    this.assignmentService
-    .assignments(this.subjectId,this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
+  getSubjectById(id: number) {
+    this.subjectService
+      .subjectGET(id)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
-        next: (response: AssignmentResponse) => {
-          this.items = response.assignments;
-          this.totalCount = response.page.toTalRecord;
-          if (selectionId != null && this.items.length > 0) {
-            this.selectedItems = this.items.filter(x => x.id == selectionId);
-          }
-
+        next: (response: SubjectDto) => {
+          this.subjectDto = response;
           this.toggleBlockUI(false);
         },
         error: () => {
           this.toggleBlockUI(false);
         },
       });
+  }
+
+  loadClassBySubjectId(subjectId: number) {
+    this.toggleBlockUI(true);
+    this.classService.classGET(this.settingId, subjectId, this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
+        next: (response: ClassReponse) => {
+          this.items = response.classes;
+          this.totalCount = response.page.toTalRecord;
+          this.toggleBlockUI(false);
+        },
+        error: () => {
+          this.toggleBlockUI(false);
+        }
+      });
+  }
+
+  loadData(selectionId = null) {
+  //   this.toggleBlockUI(true);
+
+  //   this.assignmentService
+  //   .assignments(this.subjectId,this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
+  //     .pipe(takeUntil(this.ngUnsubscribe))
+  //     .subscribe({
+  //       next: (response: AssignmentResponse) => {
+  //         this.items = response.assignments;
+  //         this.totalCount = response.page.toTalRecord;
+  //         if (selectionId != null && this.items.length > 0) {
+  //           this.selectedItems = this.items.filter(x => x.id == selectionId);
+  //         }
+
+  //         this.toggleBlockUI(false);
+  //       },
+  //       error: () => {
+  //         this.toggleBlockUI(false);
+  //       },
+  //     });
   }
 
   showAddModal() {

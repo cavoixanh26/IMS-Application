@@ -45,6 +45,7 @@ public class SubjectService : ServiceBase<Subject>, ISubjectService
     public async Task<SubjectDto> GetBySubjectByIdAsync(int id)
     {
         var subject = await context.Subjects
+            .Include(x => x.Manager)
             .FirstOrDefaultAsync(x => x.Id == id && x.IsActive != false);
         var subjectDto = mapper.Map<SubjectDto>(subject);
         return subjectDto;

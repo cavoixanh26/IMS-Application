@@ -6,30 +6,30 @@
 >
 <p-panel #pnlDetail header="Thông tin" [toggleable]="true" [collapsed]="false">
   <div class="formgrid grid">
-    <div class="field col-12 md:col-6">
-      <label for="name">Tên <span class="required">*</span></label>
+    <div class="field col-12">
+      <label for="name">Name of Class<span class="required">*</span></label>
       <input id="name" type="text" pInputText formControlName="name" [style]="{ width: '100%' }"/>
       <app-validation-message [entityForm]="form" fieldName="name" [validationMessages]="validationMessages" ></app-validation-message>
     </div>
 
     <div  class="field col-12">
       <label class="block">Subject<span class="required">*</span></label>
-      <p-dropdown [options]="subjectList" formControlName="subjectId" placeholder="Chọn subject" [showClear]="true" [style]="{ width:'100%'}"></p-dropdown>
+      <p-dropdown [options]="subjectList" formControlName="subjectId" placeholder="Select subject" [showClear]="true" [style]="{ width:'100%'}"></p-dropdown>
     </div>
 
     <div class="field col-12">
       <label class="block">Semester<span class="required">*</span></label>
-      <p-dropdown [options]="settingList" formControlName="settingId" placeholder="Chọn semester" [showClear]="true" [style]="{ width:'100%'}"></p-dropdown>
+      <p-dropdown [options]="settingList" formControlName="settingId" placeholder="Select semester" [showClear]="true" [style]="{ width:'100%'}"></p-dropdown>
     </div>
 
     <div class="field col-12">
-      <label class="block">Assignee<span class="required">*</span></label>
-      <p-dropdown [options]="assigneeList" formControlName="assigneeId" placeholder="Chọn assignee" [showClear]="true" [style]="{ width:'100%'}"></p-dropdown>
+      <label class="block">Teacher</label>
+      <p-dropdown [options]="assigneeList" formControlName="assigneeId" placeholder="Select Teacher" [showClear]="true" [style]="{ width:'100%'}"></p-dropdown>
     </div>
 
 
     <div class="field col-12">
-      <label for="description" class="block">Mô tả</label>
+      <label for="description" class="block">Description</label>
       <textarea id="description" pInputTextarea class="w-full" formControlName="description"></textarea>
     </div>
 

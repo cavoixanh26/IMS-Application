@@ -1,12 +1,15 @@
 
 <div class="animated fadeIn">
   <p-panel #pnl [style]="{ 'margin-bottom': '10px' }">
-    <p-header> Assignment Management </p-header>
+    <p-header>
+      <b>{{subjectDto.name}}</b> - {{subjectDto.description}}
+      <p><b>Manager: </b> {{subjectDto.managerName}}</p>
+    </p-header>
     <div class="grid">
       <div class="col-3">
         <div class="formgroup-inline">
           <div class="field">
-            <input id="txtKeyword" pInputText (keyup.enter)="loadData()" [(ngModel)]="keyWords" placeholder="Enter assigment..." type="text" />
+            <input id="txtKeyword" pInputText (keyup.enter)="loadData()" [(ngModel)]="keyWords" placeholder="Find class" type="text" />
           </div>
           <button pButton type="button" pButton (click)="loadData()">Find</button>
         </div>
@@ -28,8 +31,10 @@
 
 
     <p-accordion [activeIndex]="activeIndex">
-      <p-accordionTab *ngFor="let assignment of items; let i = index" [header]="assignment.name" (click)="onTabClick(i)">
-        <p>{{ assignment.description }}</p>
+      <p-accordionTab *ngFor="let class of items; let i = index" [header]="class.name" (click)="onTabClick(i)">
+        <p><b>Teacher: </b>{{class.teacherName}}</p>
+        <p><b>Number of students: </b></p>
+        <p><b>Description: </b>{{ class.description }}</p>
       </p-accordionTab>
     </p-accordion>
 

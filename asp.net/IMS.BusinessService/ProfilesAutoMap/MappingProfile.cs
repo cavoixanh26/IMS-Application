@@ -52,7 +52,11 @@ public class MappingProfile : Profile
 
         //Class
         CreateMap<CreateAndUpdateClassDto, Class>().ReverseMap();
-        CreateMap<ClassDto, Class>().ReverseMap();
+		CreateMap<Class, ClassDto>()
+			.ForMember(dest => dest.Semester, opt => opt.MapFrom(src => src.Setting != null ? src.Setting.Name : null))
+			.ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject != null ? src.Subject.Name : null))
+			.ForMember(dest => dest.TeacherName, opt => opt.MapFrom(scr => scr.Assignee != null ? scr.Assignee.Email : null))
+			.ReverseMap();
 
     }
 }
