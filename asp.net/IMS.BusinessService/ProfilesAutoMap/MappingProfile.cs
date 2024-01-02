@@ -56,6 +56,7 @@ public class MappingProfile : Profile
 			.ForMember(dest => dest.Semester, opt => opt.MapFrom(src => src.Setting != null ? src.Setting.Name : null))
 			.ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject != null ? src.Subject.Name : null))
 			.ForMember(dest => dest.TeacherName, opt => opt.MapFrom(scr => scr.Assignee != null ? scr.Assignee.Email : null))
+			.ForMember(dest => dest.NumberOfStudent, opt => opt.MapFrom(src => src.ClassStudents != null ? src.ClassStudents.Count : 0))
 			.ReverseMap();
 
     }

@@ -66,6 +66,7 @@ public selectedStudents : UserDto[] = [];
     this.toggleBlockUI(true);
     this.userService
       .users(
+        undefined,
         this.keyWords,
         this.page,
         this.itemsPerPage,
@@ -93,29 +94,30 @@ public selectedStudents : UserDto[] = [];
       });
   }
 
-  loadDataProjects(selectionId = null) {
-    this.toggleBlockUI(true);
+   loadDataProjects(selectionId = null) {
+  //   this.toggleBlockUI(true);
 
-    this.projectService
-    .projectGET(this.classId,this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe({
-        next: (response: ProjectReponse) => {
-          this.itemsProject = response.projects;
-          if (selectionId != null && this.items.length > 0) {
-            this.selectedItemsProject = this.itemsProject.filter(x => x.id == selectionId);
-          }
+  //   this.projectService
+  //   .projectGET(this.classId,this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
+  //     .pipe(takeUntil(this.ngUnsubscribe))
+  //     .subscribe({
+  //       next: (response: ProjectReponse) => {
+  //         this.itemsProject = response.projects;
+  //         if (selectionId != null && this.items.length > 0) {
+  //           this.selectedItemsProject = this.itemsProject.filter(x => x.id == selectionId);
+  //         }
 
-          this.toggleBlockUI(false);
-        },
-        error: () => {
-          this.toggleBlockUI(false);
-        },
-      });
-  }
+  //         this.toggleBlockUI(false);
+  //       },
+  //       error: () => {
+  //         this.toggleBlockUI(false);
+  //       },
+  //     });
+   }
 
   loadStudents() {
-    this.userService.users(this.keyWords,
+    this.userService.users(undefined,
+        this.keyWords,
         this.page,
         this.itemsPerPage,
         this.skip,

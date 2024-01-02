@@ -19,9 +19,6 @@ namespace IMS.Contract.Contents.Classes
         public string? SubjectName { get; set; }
         public int SettingId { get; set; }
         public string? Semester { get; set; }
-        public List<ClassStudent> ClassStudents { get; set; }
-        public List<Milestone> Milestones { get; set; }
-        public List<Project> Projects { get; set; }
-        public List<IssueSetting>? IssueSettings { get; set; }
+        public int NumberOfStudent { get; set; }
     }
 }

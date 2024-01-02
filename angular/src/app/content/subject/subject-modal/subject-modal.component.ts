@@ -1,6 +1,6 @@
 import { Subject, takeUntil } from 'rxjs';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthClient, SubjectClient, SubjectDto } from './../../../api/api-generate';
+import { AuthClient, SubjectClient, SubjectDto, UserClient, UserResponse } from './../../../api/api-generate';
 import { Component, OnInit, OnDestroy, EventEmitter } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { UtilityService } from 'src/app/shared/services/utility.service';
@@ -9,7 +9,7 @@ import { UtilityService } from 'src/app/shared/services/utility.service';
   selector: 'app-subject-modal',
   templateUrl: './subject-modal.component.html',
 })
-export class SubjectModalComponent implements OnInit,OnDestroy {
+export class SubjectModalComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<void>();
 
   // Default
@@ -20,9 +20,9 @@ export class SubjectModalComponent implements OnInit,OnDestroy {
   public saveBtnName: string;
   public closeBtnName: string;
   selectedEntity = {} as SubjectDto;
+  managerList: any[] = [];
 
   formSavedEventEmitter: EventEmitter<any> = new EventEmitter();
-
 
   constructor(
     public ref: DynamicDialogRef,
@@ -30,8 +30,11 @@ export class SubjectModalComponent implements OnInit,OnDestroy {
     private subjectService: SubjectClient,
     public authService: AuthClient,
     private utilService: UtilityService,
-    private fb: FormBuilder
-  ) { }
+    private fb: FormBuilder,
+    private userService: UserClient,
+  ) {
+    this.loadTeacher();
+  }
 
   ngOnInit() {
     this.buildForm();
@@ -44,6 +47,36 @@ export class SubjectModalComponent implements OnInit,OnDestroy {
       this.closeBtnName = 'Đóng';
     }
   }
+
+  loadTeacher() {
+    this.userService
+      .users(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
+      .subscribe((response: UserResponse) => {
+        response.users.forEach((s) => {
+          this.managerList.push({
+            label: s.fullName,
+            value: s.id,
+          });
+        });
+      });
+  }
+
+
+  public page: number = 1;
+  public itemsPerPage: number = 10;
+  public totalCount: number;
+  public keyWords: string;
+  public skip: number | null;
+  public take: number | null;
+  public sortField: string | null;
 
   loadDetail(id: any) {
     this.toggleBlockUI(true);
@@ -66,13 +99,14 @@ export class SubjectModalComponent implements OnInit,OnDestroy {
     this.form = this.fb.group({
       name: new FormControl(
         this.selectedEntity.name || null,
-          Validators.compose([
+        Validators.compose([
           Validators.required,
           Validators.maxLength(255),
           Validators.minLength(3),
         ])
       ),
       description: new FormControl(this.selectedEntity.description || null),
+      managerId: new FormControl(this.selectedEntity.managerId || null),
       isActive: true,
     });
   }
@@ -101,8 +135,8 @@ export class SubjectModalComponent implements OnInit,OnDestroy {
         });
     }
   }
-   // Validate
-   validationMessages = {
+  // Validate
+  validationMessages = {
     name: [
       { type: 'required', message: 'Bạn phải nhập tên subject' },
       { type: 'minlength', message: 'Bạn phải nhập ít nhất 3 kí tự' },

@@ -12,46 +12,42 @@ import { UtilityService } from 'src/app/shared/services/utility.service';
   selector: 'app-class',
   templateUrl: './class.component.html',
 })
-export class ClassComponent implements OnInit,OnDestroy {
+export class ClassComponent implements OnInit, OnDestroy {
+  //System variables
+  private ngUnsubscribe = new Subject<void>();
+  public blockedPanel: boolean = false;
 
- //System variables
-private ngUnsubscribe = new Subject<void>();
-public blockedPanel: boolean = false;
+  public items: ClassDto[];
+  public selectedItem: ClassDto;
+  //Paging variables
+  public page: number = 1;
+  public itemsPerPage: number = 5;
+  public totalCount: number;
+  public keyWords: string;
+  public skip: number | null;
+  public take: number | null;
+  public sortField: string | null;
 
-public items: ClassDto[];
-public selectedItem: ClassDto;
-//Paging variables
-public page: number = 1;
-public itemsPerPage: number = 10;
-public totalCount: number;
-public keyWords: string;
-public skip: number | null;
-public take: number | null;
-public sortField: string | null;
-
- //Filter variables
- subjectId: number;
- settingId:number ;
- subjectList: any[] = [];
- settingList: any[] = [];
-constructor(
-  private classService: ClassClient,
-  private subjectService: SubjectClient,
-  private settingService: SettingClient,
-  public dialogService: DialogService,
-  private notificationService: NotificationService,
-  private confirmationService: ConfirmationService,
-  private utilService : UtilityService,
-) {
-
-}
+  //Filter variables
+  subjectId: number;
+  settingId: number;
+  subjectList: any[] = [];
+  settingList: any[] = [];
+  constructor(
+    private classService: ClassClient,
+    private subjectService: SubjectClient,
+    private settingService: SettingClient,
+    public dialogService: DialogService,
+    private notificationService: NotificationService,
+    private confirmationService: ConfirmationService,
+    private utilService: UtilityService
+  ) {}
 
   ngOnInit() {
     this.loadData();
     this.loadSettings();
     this.loadSubjects();
   }
-
 
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
@@ -62,14 +58,23 @@ constructor(
     this.toggleBlockUI(true);
 
     this.classService
-    .classGET(this.settingId,this.subjectId,this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
+      .classGET(
+        this.settingId,
+        this.subjectId,
+        this.keyWords,
+        this.page,
+        this.itemsPerPage,
+        this.skip,
+        this.take,
+        this.sortField
+      )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (response: ClassReponse) => {
           this.items = response.classes;
           this.totalCount = response.page.toTalRecord;
           if (selectionId != null && this.items.length > 0) {
-            this.selectedItem = this.items.find(x => x.id == selectionId);
+            this.selectedItem = this.items.find((x) => x.id == selectionId);
           }
 
           this.toggleBlockUI(false);
@@ -100,9 +105,12 @@ constructor(
       });
   }
 
-  handleSubjectChange(newValue) {
+  handleDropdownChange(newValue: any, attribute: string) {
     if (newValue === null) {
-      this.subjectId = undefined;
+      this[attribute] = undefined;
+      this.loadData();
+    } else {
+      this.loadData();
     }
   }
 
@@ -118,19 +126,13 @@ constructor(
         this.sortField
       )
       .subscribe((response: SettingResponse) => {
-        this.settingList = response.settings
-          .map((setting) => ({
-            label: setting.name,
-            value: setting.id,
-          }));
+        this.settingList = response.settings.map((setting) => ({
+          label: setting.name,
+          value: setting.id,
+        }));
       });
   }
 
-  handleSettingChange(newValue) {
-    if (newValue === null) {
-      this.settingId = undefined;
-    }
-  }
   showAddModal() {
     const ref = this.dialogService.open(ClassModalComponent, {
       header: 'Add Class',
@@ -143,12 +145,11 @@ constructor(
         this.selectedItem = null;
         this.loadData();
       }
-      if(isSuccess == false) {
+      if (isSuccess == false) {
         this.notificationService.showError(MessageConstants.CREATED_FALL_MSG);
       }
     });
   }
-
 
   showEditModal(id: number) {
     const ref = this.dialogService.open(ClassModalComponent, {
@@ -171,12 +172,10 @@ constructor(
     });
   }
 
-
   showDetail(classDto: ClassDto) {
-    let url: string = "detail/" + classDto.id;
+    let url: string = 'detail/' + classDto.id;
     this.utilService.navigate(url);
   }
-
 
   pageChanged(event: any) {
     this.page = event.page + 1;
@@ -186,7 +185,6 @@ constructor(
       itemsPerPage: this.itemsPerPage,
     });
   }
-
 
   private toggleBlockUI(enabled: boolean) {
     if (enabled == true) {

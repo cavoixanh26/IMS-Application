@@ -185,6 +185,7 @@ export class ClassModalComponent implements OnInit, OnDestroy {
   loadTeacher() {
     this.userService
       .users(
+        undefined,
         this.keyWords,
         this.page,
         this.itemsPerPage,

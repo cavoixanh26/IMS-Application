@@ -34,7 +34,7 @@ public class ClassController : BaseController<IClassService>
 
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ProjectReponse>> GetClassByid(int id)
+    public async Task<ActionResult<ClassDto>> GetClassByid(int id)
     {
         var data = await service.GetClassById(id);
         return Ok(data);

@@ -4,4 +4,5 @@ namespace IMS.Contract.Systems.Users;
 
 public class UserRequest : PagingRequestBase
 {
+    public string? RoleName { get; set; }
 }

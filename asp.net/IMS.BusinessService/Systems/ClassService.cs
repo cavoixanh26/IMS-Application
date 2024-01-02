@@ -35,6 +35,7 @@ namespace IMS.BusinessService.Systems
         {
             var classes = await context.Classes
                 .Include(x => x.Subject)
+                .Include(x => x.ClassStudents)
                 .Include(x => x.Setting)
                 .Include(x => x.Assignee)
              .Where(u => (string.IsNullOrWhiteSpace(request.KeyWords)
@@ -68,10 +69,10 @@ namespace IMS.BusinessService.Systems
         public async Task<ClassDto> GetClassById(int classId)
         {
             var classes = await context.Classes
-           .Include(x => x.ClassStudents)
-                 .Include(x => x.Milestones)
-                 .Include(x => x.Projects)
-                 .Include(x => x.IssueSettings)
+                .Include(x => x.Assignee)
+                .Include(x => x.Subject)
+                .Include(x => x.Setting)
+                .Include(x => x.ClassStudents)
             .FirstOrDefaultAsync(u => u.Id == classId);
 
             var classDto = mapper.Map<ClassDto>(classes);

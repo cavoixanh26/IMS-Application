@@ -8,6 +8,7 @@ using IMS.Infrastructure.EnityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Linq.Dynamic.Core;
 using IMS.Contract.Common.UnitOfWorks;
+using Microsoft.EntityFrameworkCore;
 
 namespace IMS.BusinessService.Systems;
 
@@ -96,11 +97,24 @@ public class UserService : ServiceBase<AppUser>, IUserService
 
     public async Task<UserResponse> GetListAllAsync(UserRequest request)
     {
+        var usersQuery = new List<AppUser>();   
+        if (!string.IsNullOrEmpty(request.RoleName))
+        {
+            var role = await _roleManager.FindByNameAsync(request.RoleName);
+            if (role != null)
+            {
+                usersQuery = (List<AppUser>)await _userManager.GetUsersInRoleAsync(role.Name);
+            }
+        }else
+        {
+            usersQuery = _userManager.Users.ToList();
+        }
 
-        var usersQuery = _userManager.Users
+        usersQuery = usersQuery
             .Where(u => string.IsNullOrWhiteSpace(request.KeyWords)
                         || u.FullName.Contains(request.KeyWords)
-                    || u.UserName.Contains(request.KeyWords));
+                        || u.UserName.Contains(request.KeyWords))
+            .ToList();
 
         var users = await usersQuery.Paginate(request).ToDynamicListAsync();
 

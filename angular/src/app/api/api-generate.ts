@@ -761,7 +761,7 @@ export class ClassClient {
     /**
      * @return Success
      */
-    classGET2(id: number): Observable<ProjectReponse> {
+    classGET2(id: number): Observable<ClassDto> {
         let url_ = this.baseUrl + "/api/Class/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -783,14 +783,14 @@ export class ClassClient {
                 try {
                     return this.processClassGET2(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<ProjectReponse>;
+                    return _observableThrow(e) as any as Observable<ClassDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<ProjectReponse>;
+                return _observableThrow(response_) as any as Observable<ClassDto>;
         }));
     }
 
-    protected processClassGET2(response: HttpResponseBase): Observable<ProjectReponse> {
+    protected processClassGET2(response: HttpResponseBase): Observable<ClassDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -800,7 +800,7 @@ export class ClassClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProjectReponse;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ClassDto;
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -2815,6 +2815,7 @@ export class UserClient {
     }
 
     /**
+     * @param roleName (optional) 
      * @param keyWords (optional) 
      * @param page (optional) 
      * @param itemsPerPage (optional) 
@@ -2823,8 +2824,12 @@ export class UserClient {
      * @param sortField (optional) 
      * @return Success
      */
-    users(keyWords: string | undefined, page: number | undefined, itemsPerPage: number | undefined, skip: number | undefined, take: number | undefined, sortField: string | undefined): Observable<UserResponse> {
+    users(roleName: string | undefined, keyWords: string | undefined, page: number | undefined, itemsPerPage: number | undefined, skip: number | undefined, take: number | undefined, sortField: string | undefined): Observable<UserResponse> {
         let url_ = this.baseUrl + "/api/User/users?";
+        if (roleName === null)
+            throw new Error("The parameter 'roleName' cannot be null.");
+        else if (roleName !== undefined)
+            url_ += "RoleName=" + encodeURIComponent("" + roleName) + "&";
         if (keyWords === null)
             throw new Error("The parameter 'keyWords' cannot be null.");
         else if (keyWords !== undefined)
@@ -3264,28 +3269,12 @@ export interface ClassDto {
     subjectName?: string | undefined;
     settingId?: number;
     semester?: string | undefined;
-    classStudents?: ClassStudent[] | undefined;
-    milestones?: Milestone[] | undefined;
-    projects?: Project[] | undefined;
-    issueSettings?: IssueSetting[] | undefined;
+    numberOfStudent?: number;
 }
 
 export interface ClassReponse {
     page?: PagingResponseInfo;
     classes?: ClassDto[] | undefined;
-}
-
-export interface ClassStudent {
-    id?: number;
-    creationTime?: Date | undefined;
-    createdBy?: string | undefined;
-    lastModificationTime?: Date | undefined;
-    lastModifiedBy?: string | undefined;
-    isActive?: boolean | undefined;
-    studentId?: string;
-    classId?: number;
-    class?: Class;
-    students?: AppUser;
 }
 
 export interface CreateAndUpdateClassDto {
@@ -3344,6 +3333,7 @@ export interface CreateUpdateSetting {
 export interface CreateUpdateSubjectDto {
     name?: string | undefined;
     description?: string | undefined;
+    managerId?: string | undefined;
     isActive?: boolean;
 }
 

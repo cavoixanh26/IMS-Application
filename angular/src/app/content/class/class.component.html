@@ -12,11 +12,11 @@
             <button type="button" class="ml-1" pButton (click)="loadData()">Search</button>
       </div>
       <div class="col-3">
-        <p-dropdown [showClear]="true" [options]="subjectList" [(ngModel)]="subjectId" (ngModelChange)="handleSubjectChange($event)" placeholder="Select subject" class="mr-5"></p-dropdown>
+        <p-dropdown [showClear]="true" [options]="subjectList" [(ngModel)]="subjectId" (ngModelChange)="handleDropdownChange($event, 'subjectId')" placeholder="Select subject" class="mr-5"></p-dropdown>
       </div>
 
       <div class="col-3">
-        <p-dropdown [showClear]="true" [options]="settingList" [(ngModel)]="settingId" (ngModelChange)="handleSettingChange($event)" placeholder="Select semester"></p-dropdown>
+        <p-dropdown chan [showClear]="true" [options]="settingList" [(ngModel)]="settingId" (ngModelChange)="handleDropdownChange($event, 'settingId')" placeholder="Select semester"></p-dropdown>
       </div>
     </div>
     <p-table [value]="items" [responsive]="true" >
@@ -26,7 +26,7 @@
           <th>Subject</th>
           <th>Teacher</th>
           <th>Semester</th>
-          <th>Active</th>
+          <th class="text-center">Number of student</th>
           <th>Action</th>
         </tr>
       </ng-template>
@@ -36,10 +36,10 @@
           <td>{{ row.subjectName }}</td>
           <td>{{ row.teacherName  ? row.teacherName : 'N/a'}}</td>
           <td>{{ row.semester }}</td>
-          <td></td>
+          <td class="text-center">{{row.numberOfStudent}}</td>
           <td>
             <button pButton  type="button" label="edit" class="mr-2 p-button-help" (click)="showEditModal(row.id)"></button>
-            <button pButton type="button" label="Show more" routerLink="/content/class/detail/{{row.id}}"> </button>
+            <button pButton type="button" label="Show more" routerLink="/content/class/{{row.id}}"> </button>
           </td>
         </tr>
       </ng-template>
@@ -52,7 +52,7 @@
       [rows]="itemsPerPage"
       [totalRecords]="totalCount"
       (onPageChange)="pageChanged($event)"
-      [rowsPerPageOptions]="[10, 20, 50, 100]"
+      [rowsPerPageOptions]="[5, 10, 50, 100]"
     ></p-paginator>
 
     <p-blockUI [target]="pnl">
