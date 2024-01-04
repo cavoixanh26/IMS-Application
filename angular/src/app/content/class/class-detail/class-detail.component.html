@@ -1,51 +1,93 @@
 <div class="animated fadeIn">
-  <p-panel #pnl [style]="{ 'margin-bottom': '10px' }">
-    <p-header> Member </p-header>
-    <div class="grid">
-      <div class="col-4">
-
-      </div>
-      <div class="col-8">
+  <p-panel #pnl [style]="{ 'margin-bottom': '10px' }" [toggleable]="true">
+    <p-header>
+      <p>
+        <b>Class: </b> {{ detailClass.name }}, <b>Teacher: </b>
+        {{ detailClass.teacherName ? detailClass.teacherName : "N/a" }}
+      </p>
+    </p-header>
+    <p-toolbar>
+      <div class="p-toolbar-group-start">
         <div class="formgroup-inline">
-          <div class="field">
-            <input id="txtKeyword" pInputText (keyup.enter)="loadDataUsers()" [(ngModel)]="keyWords" placeholder="Nhập từ khóa..." type="text"/>
+            <input
+              id="txtKeyword"
+              pInputText
+              (keyup.enter)="loadStudentList()"
+              [(ngModel)]="keyWords"
+              placeholder="Find student..."
+              type="text"
+              class="mr-3"
+            />
           </div>
-          <button type="button" pButton (click)="loadDataUsers()">Tìm</button>
-
-
-<div class="flex ml-2">
-  <p-button (click)="showDialog()" icon="pi pi-external-link" label="Add student"></p-button>
-  <p-dialog header="Add Student" [(visible)]="visible" [style]="{width: '30vw',height:'50vh'}">
-    <button pButton type="button" label="Thêm" icon="fa fa-plus"  class="mb-2 p-button-info" (click)="addStudent()" ></button>
-    <p-multiSelect [options]="studentList" [style]="{width: '100%'}" display="chip" [showClear]="true" [(ngModel)]="selectedStudents" optionLabel="label"></p-multiSelect>
-  </p-dialog>
-</div>
-
-
-        </div>
+          <button type="button" pButton (click)="loadStudentList()">
+            Search Students
+          </button>
       </div>
-    </div>
-    <p-table #pnl [value]="items" selectionMode="multiple" dataKey="id" [(selection)]="selectedItems" [metaKeySelection]="true" [responsive]="true">
+      <div class="p-toolbar-group-end">
+        <div class="flex mr-3" style="float: right">
+          <p-button
+            (click)="showDialog()"
+            icon="pi pi-external-link"
+            label="Add student"
+          ></p-button>
+          <p-dialog
+            header="Add Student"
+            [(visible)]="visible"
+            [style]="{ width: '30vw', height: '100vh' }"
+          >
+            <button
+              pButton
+              type="button"
+              label="Add all students"
+              icon="fa fa-plus"
+              class="mb-2 p-button-info"
+              (click)="addStudents()"
+            ></button>
+            <p-multiSelect
+              [options]="studentList"
+              [style]="{ width: '100%' }"
+              display="chip"
+              [showClear]="true"
+              [(ngModel)]="selectedStudents"
+              optionLabel="label"
+            ></p-multiSelect>
+          </p-dialog>
+        </div>
+        <p-button class="mr-3" label="Import Students" icon="pi pi-file-import"></p-button>
+        <p-button label="Get template" icon="pi pi-file-import"></p-button>
+      </div>
+    </p-toolbar>
+
+    <p-table
+      #pnl
+      [value]="items"
+      selectionMode="multiple"
+      dataKey="id"
+      [(selection)]="selectedItems"
+      [metaKeySelection]="true"
+      [responsive]="true"
+    >
       <ng-template pTemplate="header">
         <tr>
-          <th style="width: 10px">
-            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-          </th>
-          <th>Tên</th>
-          <th>Image</th>
-          <th>Email</th>
-          <th>Số ĐT</th>
-          <th></th>
+          <th>CODE</th>
+          <th>FULL NAME</th>
+          <th>IMAGE</th>
+          <th>EMAIL</th>
+          <th>PHONE NUMBER</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-row>
         <tr [pSelectableRow]="row">
-          <td style="width: 10px">
-            <span class="ui-column-title"></span>
-            <p-tableCheckbox [value]="row"></p-tableCheckbox>
-          </td>
+          <td>{{ row.id | slice : 0 : 8 }}</td>
           <td>{{ row.fullName }}</td>
-          <td><p-image [src]="row.avatar" alt="Image" width="50" [preview]="true"></p-image></td>
+          <td>
+            <p-image
+              [src]="row.avatar"
+              alt="Image"
+              width="50"
+              [preview]="true"
+            ></p-image>
+          </td>
           <td>{{ row.email }}</td>
           <td>{{ row.phoneNumber }}</td>
           <!-- <td style="width: 150px">
@@ -59,13 +101,22 @@
       </ng-template>
     </p-table>
 
-    <p-paginator [rows]="itemsPerPage" [totalRecords]="totalCount" [rowsPerPageOptions]="[10, 20, 50, 100]"
-    (onPageChange)="pageChanged($event)"
+    <p-paginator
+      [rows]="itemsPerPage"
+      [totalRecords]="totalCount"
+      [rowsPerPageOptions]="[5, 10, 20, 30]"
+      (onPageChange)="pageChanged($event)"
     ></p-paginator>
 
     <p-blockUI [target]="pnl" [blocked]="blockedPanel">
       <p-progressSpinner
-        [style]="{ width: '100px', height: '100px', position: 'absolute', top: '25%', left: '50%' }"
+        [style]="{
+          width: '100px',
+          height: '100px',
+          position: 'absolute',
+          top: '25%',
+          left: '50%'
+        }"
         strokeWidth="2"
         animationDuration="1s"
       ></p-progressSpinner>
@@ -73,19 +124,26 @@
   </p-panel>
 </div>
 
-
 <div class="animated fadeIn">
   <p-panel #pnl [style]="{ 'margin-bottom': '10px' }">
     <p-header> Project Management </p-header>
     <div class="grid">
-      <div class="col-4">
-      </div>
+      <div class="col-4"></div>
       <div class="col-3">
         <div class="formgroup-inline">
           <div class="field">
-            <input id="txtKeyword1" pInputText (keyup.enter)="loadDataProjects()" [(ngModel)]="keyWords" placeholder="Enter project..." type="text" />
+            <input
+              id="txtKeyword1"
+              pInputText
+              (keyup.enter)="loadDataProjects()"
+              [(ngModel)]="keyWords"
+              placeholder="Enter project..."
+              type="text"
+            />
           </div>
-          <button pButton type="button" pButton (click)="loadDataProjects()">Find</button>
+          <button pButton type="button" pButton (click)="loadDataProjects()">
+            Find
+          </button>
         </div>
       </div>
     </div>
@@ -97,29 +155,41 @@
         <button pButton pRiffle label="Update" icon="pi pi-pencil" class="p-button-help"  *ngIf="selectedItems.length === 1" (click)="showEditModal()" ></button> -->
       </ng-template>
       <ng-template pTemplate="right">
-        <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
+        <p-fileUpload
+          mode="basic"
+          accept="image/*"
+          [maxFileSize]="1000000"
+          label="Import"
+          chooseLabel="Import"
+          class="mr-2 inline-block"
+        ></p-fileUpload>
         <!-- <button pButton pRipple label="Export Excel" icon="pi pi-file-excel" class="p-button-help mr-2" (click)="exportExcel()"></button>
         <button type="button" pButton pRipple label="Export PDF" icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button> -->
       </ng-template>
     </p-toolbar>
 
-
     <p-accordion [activeIndex]="activeIndex">
-      <p-accordionTab *ngFor="let project of itemsProject; let i = index" [header]="project.name" (click)="onTabClick(i)">
+      <p-accordionTab
+        *ngFor="let project of itemsProject; let i = index"
+        [header]="project.name"
+        (click)="onTabClick(i)"
+      >
         <p>{{ project.description }}</p>
       </p-accordionTab>
     </p-accordion>
 
-
-
-  <p-blockUI [target]="pnl" [blocked]="blockedPanel">
-    <p-progressSpinner
-      [style]="{ width: '100px', height: '100px', position: 'absolute', top: '25%', left: '50%' }"
-      strokeWidth="2"
-      animationDuration=".5s"
-    ></p-progressSpinner>
-  </p-blockUI>
-</p-panel>
+    <p-blockUI [target]="pnl" [blocked]="blockedPanel">
+      <p-progressSpinner
+        [style]="{
+          width: '100px',
+          height: '100px',
+          position: 'absolute',
+          top: '25%',
+          left: '50%'
+        }"
+        strokeWidth="2"
+        animationDuration=".5s"
+      ></p-progressSpinner>
+    </p-blockUI>
+  </p-panel>
 </div>
-
-

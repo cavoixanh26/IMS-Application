@@ -5,6 +5,7 @@ using IMS.Contract.Contents.Milestones;
 using IMS.Contract.Contents.Projects;
 using IMS.Contract.Contents.Settings;
 using IMS.Contract.Contents.Subjects;
+using IMS.Contract.Dtos.Students;
 using IMS.Contract.Systems.Roles;
 using IMS.Contract.Systems.Users;
 using IMS.Domain.Contents;
@@ -59,5 +60,17 @@ public class MappingProfile : Profile
 			.ForMember(dest => dest.NumberOfStudent, opt => opt.MapFrom(src => src.ClassStudents != null ? src.ClassStudents.Count : 0))
 			.ReverseMap();
 
+		// Student
+		CreateMap<ClassStudent, StudentDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.StudentId))
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Students.UserName))
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Students.FullName))
+            .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.Students.Avatar))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Students.Email))
+            .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(src => src.Students.BirthDay))
+            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Students.PhoneNumber));
+
+		// classStudet
+		CreateMap<ClassStudent, AddStudentInClassRequest>().ReverseMap();
     }
 }

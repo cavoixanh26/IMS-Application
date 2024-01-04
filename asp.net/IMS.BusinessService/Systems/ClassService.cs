@@ -4,17 +4,15 @@ using IMS.BusinessService.Service;
 using IMS.Contract.Common.Sorting;
 using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Classes;
+using IMS.Contract.Dtos.Students;
 using IMS.Contract.ExceptionHandling;
 using IMS.Domain.Contents;
 using IMS.Domain.Systems;
 using IMS.Infrastructure.EnityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Pqc.Crypto.Frodo;
 
 namespace IMS.BusinessService.Systems
 {
@@ -114,6 +112,48 @@ namespace IMS.BusinessService.Systems
             context.Entry(classEntity).State = EntityState.Modified;
             await unitOfWork.SaveChangesAsync();
             return mapper.Map<ClassDto>(classEntity);
+        }
+
+
+        public async Task<StudentResponse> GetStudentsInClass(int id, StudentRequest request)
+        {
+            var classStudents = await context.ClassStudents
+                .Include(x => x.Class)
+                .Include(x => x.Students)
+                .Where(x => x.ClassId == id)
+                .ToListAsync();
+            var students = mapper.Map<List<StudentDto>>(classStudents.Paginate(request));
+            var response = new StudentResponse
+            {
+                Page = GetPagingResponse(request, classStudents.Count),
+                Students = students
+            };
+            return response;
+        }
+
+        public async Task AddedStudentoClass(AddStudentInClassRequest request)
+        {
+            var classExist = await context.Classes.AnyAsync(x => x.Id == request.ClassId);
+            if (!classExist)
+                throw HttpException.NotFoundException("Not Found Class");
+
+            foreach (var studentId in request.StudentIds)
+            {
+                var studentExist = await userManager.FindByIdAsync(studentId.ToString());
+                if (studentExist == null)
+                    throw HttpException.NotFoundException("Not Found Student");
+                var checkStudentRole = await userManager.IsInRoleAsync(studentExist, RoleDefault.User);
+                if (!checkStudentRole)
+                    throw HttpException.BadRequestException("The user is not student");
+                var classStudent = new ClassStudent
+                {
+                    ClassId = request.ClassId,
+                    StudentId = studentId,
+                };
+                await context.ClassStudents.AddAsync(classStudent);
+            }
+            
+            await unitOfWork.SaveChangesAsync();
         }
     }
 }

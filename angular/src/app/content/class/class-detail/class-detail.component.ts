@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
-import { ClassClient, ProjectClient, ProjectDto, ProjectReponse, UserClient, UserDto, UserResponse } from 'src/app/api/api-generate';
+import { AddStudentInClassRequest, ClassClient, ClassDto, ProjectClient, ProjectDto, ProjectReponse, StudentDto, StudentResponse, UserClient, UserDto, UserResponse } from 'src/app/api/api-generate';
 import { MessageConstants } from 'src/app/shared/constants/message.const';
 import { FileService } from 'src/app/shared/services/file.service';
 import { NotificationService } from 'src/app/shared/services/notification.service';
@@ -13,60 +13,68 @@ import { UtilityService } from 'src/app/shared/services/utility.service';
   selector: 'app-class-detail',
   templateUrl: './class-detail.component.html',
 })
-export class ClassDetailComponent implements OnInit,OnDestroy {
-//System variables
-private ngUnsubscribe = new Subject<void>();
-public blockedPanel: boolean = false;
+export class ClassDetailComponent implements OnInit, OnDestroy {
+  //System variables
+  private ngUnsubscribe = new Subject<void>();
+  public blockedPanel: boolean = false;
 
-classId;
+  classId;
+  public detailClass: ClassDto;
 
-//Paging variables
-public page: number = 1;
-public itemsPerPage: number = 5;
-public totalCount: number;
-public keyWords: string |  null;
-public skip: number | null;
-public take: number | null;
-public sortField: string | null;
+  //Paging variables
+  public page: number = 1;
+  public itemsPerPage: number = 5;
+  public totalCount: number;
+  public keyWords: string | null;
+  public skip: number | null;
+  public take: number | null;
+  public sortField: string | null;
 
-//Api variables
-public items: UserDto[];
-public selectedItems: UserDto[] = [];
+  //Api variables
+  public items: StudentDto[];
+  public selectedItems: StudentDto[] = [];
 
-visible: boolean = false;
-studentList:any[] = [];
+  visible: boolean = false;
+  studentList: any[] = [];
 
-public itemsProject: ProjectDto[];
-public selectedItemsProject: ProjectDto[] = [];
+  public itemsProject: ProjectDto[];
+  public selectedItemsProject: ProjectDto[] = [];
 
-public selectedStudents : UserDto[] = [];
+  public selectedStudents: any[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
     public dialogService: DialogService,
-    private userService : UserClient,
+    private userService: UserClient,
     private classService: ClassClient,
     private notificationService: NotificationService,
     private confirmationService: ConfirmationService,
     private router: Router,
-    private utilService : UtilityService,
+    private utilService: UtilityService,
     private projectService: ProjectClient,
-    private fileService: FileService,
-
-  ) { }
+    private fileService: FileService
+  ) {}
 
   ngOnInit() {
     this.classId = this.activatedRoute.snapshot.paramMap.get('id');
-    this.loadDataUsers();
+    this.loadDetailClass(this.classId);
+    this.loadStudentList();
     this.loadDataProjects();
     this.loadStudents();
   }
 
-  loadDataUsers(selectionId = null) {
+  loadDetailClass(id: number) {
+    this.classService
+      .classGET2(id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response: ClassDto) => (this.detailClass = response));
+  }
+
+  loadStudentList(selectionId = null) {
     this.toggleBlockUI(true);
-    this.userService
-      .users(
-        undefined,
+    this.classService
+      .studentsList(
+        this.classId,
         this.keyWords,
         this.page,
         this.itemsPerPage,
@@ -76,8 +84,8 @@ public selectedStudents : UserDto[] = [];
       )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
-        next: (response: UserResponse) => {
-          this.items = response.users;
+        next: (response: StudentResponse) => {
+          this.items = response.students;
           this.items.forEach(
             async (x) => (x.avatar = await this.GetFileFromFirebase(x.avatar))
           );
@@ -94,45 +102,45 @@ public selectedStudents : UserDto[] = [];
       });
   }
 
-   loadDataProjects(selectionId = null) {
-  //   this.toggleBlockUI(true);
-
-  //   this.projectService
-  //   .projectGET(this.classId,this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
-  //     .pipe(takeUntil(this.ngUnsubscribe))
-  //     .subscribe({
-  //       next: (response: ProjectReponse) => {
-  //         this.itemsProject = response.projects;
-  //         if (selectionId != null && this.items.length > 0) {
-  //           this.selectedItemsProject = this.itemsProject.filter(x => x.id == selectionId);
-  //         }
-
-  //         this.toggleBlockUI(false);
-  //       },
-  //       error: () => {
-  //         this.toggleBlockUI(false);
-  //       },
-  //     });
-   }
-
-  loadStudents() {
-    this.userService.users(undefined,
-        this.keyWords,
-        this.page,
-        this.itemsPerPage,
-        this.skip,
-        this.take,
-        this.sortField).subscribe((response: UserResponse) => {
-      response.users.forEach(s => {
-        this.studentList.push({
-          label: s.fullName,
-          value: s.id,
-        });
-      });
-    });
+  loadDataProjects(selectionId = null) {
+    //   this.toggleBlockUI(true);
+    //   this.projectService
+    //   .projectGET(this.classId,this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
+    //     .pipe(takeUntil(this.ngUnsubscribe))
+    //     .subscribe({
+    //       next: (response: ProjectReponse) => {
+    //         this.itemsProject = response.projects;
+    //         if (selectionId != null && this.items.length > 0) {
+    //           this.selectedItemsProject = this.itemsProject.filter(x => x.id == selectionId);
+    //         }
+    //         this.toggleBlockUI(false);
+    //       },
+    //       error: () => {
+    //         this.toggleBlockUI(false);
+    //       },
+    //     });
   }
 
-
+  loadStudents() {
+    this.userService
+      .users(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
+      .subscribe((response: UserResponse) => {
+        response.users.forEach((s) => {
+          this.studentList.push({
+            label: s.fullName,
+            value: s.id,
+          });
+        });
+      });
+  }
 
   public async GetFileFromFirebase(fileName: string) {
     if (fileName === null) {
@@ -155,14 +163,13 @@ public selectedStudents : UserDto[] = [];
   }
 
   pageChanged(event: any): void {
-    this.page = event.page;
+    this.page = event.page + 1;
     this.itemsPerPage = event.rows;
-    this.loadDataUsers({
+    this.loadStudentList({
       page: this.page,
       itemsPerPage: this.itemsPerPage,
     });
   }
-
 
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
@@ -171,40 +178,31 @@ public selectedStudents : UserDto[] = [];
 
   showDialog() {
     this.visible = true;
+  }
 
-}
+  addStudents() {
+    let ids = [];
+    this.selectedStudents.forEach((element) => {
+      ids.push(element.value);
+    });
 
-addStudent() {
-  // var ids = [];
-  // this.selectedStudents.forEach((element) => {
-  //   ids.push(element);
-  // });
-
-  // var data: ClassStudentDto[] = [];
-
-  // ids.forEach((userDto) => {
-  //   var classStudentDto: ClassStudentDto = {
-  //     classId: this.classId,
-  //     userId: userDto.value,
-  //   };
-
-  //   data.push(classStudentDto);
-  // });
-
-  // this.classService.addStudent(data).subscribe({
-  //   next: () => {
-  //     this.notificationService.showSuccess(MessageConstants.CREATED_OK_MSG);
-  //     this.loadDataUsers();
-  //     this.selectedStudents = [];
-  //     this.toggleBlockUI(false);
-  //   },
-  //   error: () => {
-  //     this.toggleBlockUI(false);
-  //   },
-  // });
-}
-
-
+    let data: AddStudentInClassRequest = {
+      classId: this.classId,
+      studentIds: ids,
+    };
+    
+    this.classService.addStudent(data).subscribe({
+      next: () => {
+        this.notificationService.showSuccess(MessageConstants.CREATED_OK_MSG);
+        this.loadStudentList();
+        this.selectedStudents = [];
+        this.toggleBlockUI(false);
+      },
+      error: () => {
+        this.notificationService.showError(MessageConstants.CREATED_FALL_MSG);
+      },
+    });
+  }
 
   activeIndex: number = -1; // Khởi tạo activeIndex với giá trị mặc định
 

@@ -32,9 +32,9 @@
 
     <p-accordion [activeIndex]="activeIndex">
       <p-accordionTab *ngFor="let class of items; let i = index" [header]="class.name" (click)="onTabClick(i)">
-        <p><b>Teacher: </b>{{class.teacherName}}</p>
-        <p><b>Number of students: </b></p>
-        <p><b>Description: </b>{{ class.description }}</p>
+        <p><b>Teacher: </b>{{class.teacherName ? class.teacherName : 'N/a'}}</p>
+        <p><b>Number of students: </b>{{class.numberOfStudent ? class.numberOfStudent : 'N/a'}}</p>
+        <p><b>Description: </b>{{ class.description ? class.description : 'N/a'}}</p>
       </p-accordionTab>
     </p-accordion>
 
