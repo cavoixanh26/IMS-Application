@@ -1,4 +1,5 @@
 using AutoMapper;
+using ClosedXML.Excel;
 using IMS.BusinessService.Constants;
 using IMS.BusinessService.Service;
 using IMS.Contract.Common.Sorting;
@@ -9,10 +10,9 @@ using IMS.Contract.ExceptionHandling;
 using IMS.Domain.Contents;
 using IMS.Domain.Systems;
 using IMS.Infrastructure.EnityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Pqc.Crypto.Frodo;
 
 namespace IMS.BusinessService.Systems
 {
@@ -154,6 +154,79 @@ namespace IMS.BusinessService.Systems
             }
             
             await unitOfWork.SaveChangesAsync();
+        }
+
+        public Task DownLoadTemplateAddStudentsToClass()
+        {
+            throw new Exception();
+        }
+
+        public async Task ImportStudentToClass(int classId, IFormFile formFile)
+        {
+            if (!Path.GetExtension(formFile.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+            {
+                throw HttpException.BadRequestException("Wrong type of file(only support .xlsx");
+            }
+
+            var classExist = await context.Classes.AnyAsync(x => x.Id == classId);
+            if (!classExist)
+                throw HttpException.NotFoundException("Not Found Class");
+
+            var studentImportList = GetStudentIdsFromFile(formFile);
+
+            foreach (var student in studentImportList)
+            {
+                var studentExistInClass = await context.ClassStudents
+                    .AnyAsync(x => x.StudentId == student.StudentId
+                                && x.ClassId == classId);
+                if (!studentExistInClass)
+                {
+                    var classStudent = new ClassStudent
+                    {
+                        ClassId = classId,
+                        StudentId = student.StudentId,
+                    };
+                    await context.ClassStudents.AddAsync(classStudent);
+                }
+            }
+            await unitOfWork.SaveChangesAsync();
+        }
+
+
+        private List<StudentImport> GetStudentIdsFromFile(IFormFile formFile)
+        {
+            var studentIds = new List<StudentImport>();
+            using (var stream = formFile.OpenReadStream())
+            {
+                using (var wbook = new XLWorkbook(stream))
+                {
+                    var ws = wbook.Worksheet(1);
+                    var startRow = 2;
+                    var endRow = ws.LastRowUsed().RowNumber();
+                    for (int rowNum = startRow; rowNum <= endRow; rowNum++)
+                    {
+                        var emailOfStudent = ws.Cell(rowNum, 2).Value.ToString();
+                        var student = GetStudentByEmail(emailOfStudent);
+                        if (student != null)
+                        {
+                            var studentImport = new StudentImport
+                            {
+                                StudentId = student.Id,
+                            };
+                            studentIds.Add(studentImport);
+                        }
+                    }
+                }
+            }
+
+            return studentIds;  
+        }
+
+        private AppUser GetStudentByEmail(string emailOfStudent)
+        {
+            var student = userManager.Users
+                .FirstOrDefault(x => x.Email.Trim().Equals(emailOfStudent.Trim()));
+            return student;
         }
     }
 }

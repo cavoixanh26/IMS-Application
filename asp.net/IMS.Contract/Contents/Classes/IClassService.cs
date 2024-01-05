@@ -2,6 +2,8 @@
 using IMS.Contract.Dtos.Students;
 using IMS.Domain.Contents;
 using IMS.Domain.Systems;
+using Microsoft.AspNetCore.Http;
+
 namespace IMS.Contract.Contents.Classes;
 
 public interface IClassService : IGenericRepository<Class>
@@ -12,4 +14,6 @@ public interface IClassService : IGenericRepository<Class>
     Task<ClassDto> UpdateClass(int id, CreateAndUpdateClassDto request);
     Task<StudentResponse> GetStudentsInClass(int id, StudentRequest request);
     Task AddedStudentoClass(AddStudentInClassRequest request);
+    Task DownLoadTemplateAddStudentsToClass();
+    Task ImportStudentToClass(int classId, IFormFile formFile);
 }

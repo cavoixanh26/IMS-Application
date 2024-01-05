@@ -10,6 +10,9 @@ using IMS.Domain.Systems;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.Data;
+using ClosedXML.Excel;
 
 namespace IMS.Api.APIControllers.Contents;
 
@@ -71,4 +74,37 @@ public class ClassController : BaseController<IClassService>
         return Ok("Student added to class successfully");
     }
 
+    [HttpPost("down-template-add-students")]
+    public ActionResult GetTemplateExcelAddStudent()
+    {
+        var dt = new DataTable("Template");
+        dt.Columns.AddRange(new DataColumn[2]
+        {
+            new DataColumn("Full Name"),
+            new DataColumn("Email")
+        });
+
+        using (var wb = new XLWorkbook())
+        {
+            wb.Worksheets.Add(dt);
+            using (var stream = new MemoryStream())
+            {
+                wb.SaveAs(stream);
+                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "template-add-student.xlsx");
+            }
+        }
+    }
+
+    [HttpPost("import-students")]
+    public async Task<IActionResult> ImportStudentToClassAsync(int classId, IFormFile formFile)
+    {
+        formFile = Request.Form.Files[0];
+        if (formFile == null || formFile.Length <= 0)
+        {
+            return BadRequest("Empty File");
+        }
+
+        await service.ImportStudentToClass(classId, formFile);
+        return Ok("Import successfully");
+    }
 }
