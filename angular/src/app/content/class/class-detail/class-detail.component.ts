@@ -190,7 +190,7 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
       classId: this.classId,
       studentIds: ids,
     };
-    
+
     this.classService.addStudent(data).subscribe({
       next: () => {
         this.notificationService.showSuccess(MessageConstants.CREATED_OK_MSG);
@@ -215,6 +215,56 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
       // Nếu tab chưa được chọn, chọn nó và cập nhật selectedItems
       this.activeIndex = index;
       this.selectedItemsProject = [this.itemsProject[index]];
+    }
+  }
+
+  downLoadTemplateExcel() {
+    this.classService.downTemplateAddStudents().subscribe(
+      (response: any) => {
+        const blob = new Blob([response], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+        const url = window.URL.createObjectURL(blob);
+
+        // Tạo một thẻ <a> để tải xuống tệp Excel
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'template-add-student.xlsx';
+        document.body.appendChild(a);
+        a.click();
+
+        // Giải phóng URL tạm thời
+        window.URL.revokeObjectURL(url);
+      },
+      (error) => {
+        console.error('Lỗi khi tải xuống tệp: ', error);
+      }
+    );
+  }
+
+  importAddStudents(event: any) {
+    let files = event.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const reader = new FileReader();
+      let fileAsBlob: Blob;
+      reader.onload = () => {
+         fileAsBlob = new Blob([reader.result], { type: file.type });
+      };
+
+      this.classService
+        .importStudents(this.classId, file)
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe(
+          (response) => {
+            // Xử lý khi file được upload thành công (nếu cần)
+            console.log('File uploaded successfully:', response);
+          },
+          (error) => {
+            // Xử lý khi có lỗi xảy ra trong quá trình upload file
+            console.error('Error uploading file:', error);
+          }
+        );
     }
   }
 }

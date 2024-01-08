@@ -53,8 +53,9 @@
             ></p-multiSelect>
           </p-dialog>
         </div>
-        <p-button class="mr-3" label="Import Students" icon="pi pi-file-import"></p-button>
-        <p-button label="Get template" icon="pi pi-file-import"></p-button>
+        <p-fileUpload class="mr-3" mode="basic" chooseLabel="Import Students" name="demo[]" [auto]="true" accept=".xlsx" (onSelect)="importAddStudents($event)"></p-fileUpload>
+        <!-- <p-button class="mr-3" label="Import Students" icon="pi pi-file-import" (onclick)="importAddStudents()"></p-button> -->
+        <p-button label="Download template" icon="pi pi-file-import" (onClick)="downLoadTemplateExcel()"></p-button>
       </div>
     </p-toolbar>
 
