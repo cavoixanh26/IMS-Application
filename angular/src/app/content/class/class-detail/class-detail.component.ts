@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
-import { AddStudentInClassRequest, ClassClient, ClassDto, ProjectClient, ProjectDto, ProjectReponse, StudentDto, StudentResponse, UserClient, UserDto, UserResponse } from 'src/app/api/api-generate';
+import { AddStudentInClassRequest, ClassClient, ClassDto, FileParameter, ProjectClient, ProjectDto, ProjectReponse, StudentDto, StudentResponse, UserClient, UserDto, UserResponse } from 'src/app/api/api-generate';
 import { MessageConstants } from 'src/app/shared/constants/message.const';
 import { FileService } from 'src/app/shared/services/file.service';
 import { NotificationService } from 'src/app/shared/services/notification.service';
@@ -247,24 +247,32 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
     if (files && files.length > 0) {
       const file = files[0];
       const reader = new FileReader();
-      let fileAsBlob: Blob;
-      reader.onload = () => {
-         fileAsBlob = new Blob([reader.result], { type: file.type });
-      };
+      reader.onload = (event) => {
+         const fileData = event.target.result as ArrayBuffer;
+         const blob = new Blob([fileData], {
+           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+         });
 
-      this.classService
-        .importStudents(this.classId, file)
-        .pipe(takeUntil(this.ngUnsubscribe))
-        .subscribe(
-          (response) => {
-            // Xử lý khi file được upload thành công (nếu cần)
-            console.log('File uploaded successfully:', response);
-          },
-          (error) => {
-            // Xử lý khi có lỗi xảy ra trong quá trình upload file
-            console.error('Error uploading file:', error);
-          }
+         const formFile: FileParameter = {
+           data: blob,
+           fileName: file.name,
+         };
+         this.classService
+           .importStudents(this.classId, formFile)
+           .pipe(takeUntil(this.ngUnsubscribe))
+           .subscribe(
+             (response) => {
+               // Xử lý khi file được upload thành công (nếu cần)
+               console.log('File uploaded successfully:', response);
+             },
+             (error) => {
+               // Xử lý khi có lỗi xảy ra trong quá trình upload file
+               console.error('Error uploading file:', error);
+             }
         );
+        
+      };
+      reader.readAsArrayBuffer(file);
     }
   }
 }
