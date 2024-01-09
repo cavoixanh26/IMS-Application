@@ -10,20 +10,28 @@ using IMS.Contract.ExceptionHandling;
 using Microsoft.AspNetCore.Identity;
 using IMS.Domain.Systems;
 using IMS.BusinessService.Constants;
+using IMS.Contract.Systems.Roles;
 
 namespace IMS.BusinessService.Systems;
 
 public class SubjectService : ServiceBase<Subject>, ISubjectService
 {
     private readonly UserManager<AppUser> userManager;
+    private readonly IRoleService roleService;
+    private readonly RoleManager<AppRole> roleManager;
+
     public SubjectService(
         IMSDbContext context,
         IMapper mapper,
         IUnitOfWork unitOfWork,
-        UserManager<AppUser> userManager) 
+        UserManager<AppUser> userManager,
+        IRoleService roleService,
+        RoleManager<AppRole> roleManager) 
         : base(context, mapper, unitOfWork)
     {
         this.userManager = userManager;
+        this.roleService = roleService;
+        this.roleManager = roleManager;
     }
 
     public async Task<SubjectDto> CreateSubject(CreateUpdateSubjectDto request)
@@ -108,9 +116,22 @@ public class SubjectService : ServiceBase<Subject>, ISubjectService
         {
             throw HttpException.NoPermissionException("Not Permission!");
         }
+
+        // if assignee doesn't have manager role, add role manager
+        if (request.ManagerId.HasValue)
+        {
+            var manager = await userManager.FindByIdAsync(request.ManagerId.ToString());
+            var checkRoleManager = await userManager.IsInRoleAsync(manager, RoleDefault.Manager);
+            var managerRole = await roleManager.FindByNameAsync(RoleDefault.Manager);
+            if (!checkRoleManager && managerRole is not null)
+            {
+                await roleService.AssignRoleForUser(manager.Id.ToString(), managerRole.Id.ToString());
+            }
+        }
         
         mapper.Map(request, subject);
         context.Update(subject);
         await unitOfWork.SaveChangesAsync();
     }
+
 }

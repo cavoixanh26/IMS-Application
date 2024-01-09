@@ -46,7 +46,10 @@ namespace IMS.BusinessService.Systems
 
             if (await userManager.IsInRoleAsync(currentUser, RoleDefault.Manager))
             {
-                classes = classes.Where(x => x.CreatedBy.Equals(currentUser.Id.ToString())).ToList();
+                classes = classes.Where(x => x.CreatedBy.Equals(currentUser.Id.ToString())
+                                            || (x.Subject?.ManagerId != null 
+                                                && x.Subject.ManagerId == currentUser.Id))
+                    .ToList();
             }
             else if (await userManager.IsInRoleAsync(currentUser, RoleDefault.Teacher))
             {

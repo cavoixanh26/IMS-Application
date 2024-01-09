@@ -20,5 +20,7 @@ namespace IMS.Contract.Systems.Roles
 		Task<PermissionDto> GetAllRolePermission(string roleId);
 
 		Task SavePermission(PermissionDto input);
+
+		Task AssignRoleForUser(string userId, string roleId);
 	}
 }
