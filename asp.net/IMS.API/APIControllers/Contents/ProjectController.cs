@@ -3,68 +3,100 @@ using IMS.BusinessService.Systems;
 using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Projects;
 using IMS.Contract.Contents.Subjects;
+using IMS.Contract.Dtos.Members;
+using IMS.Contract.ExceptionHandling;
 using IMS.Contract.Systems.Users;
 using IMS.Domain.Contents;
+using IMS.Domain.Systems;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IMS.Api.APIControllers.Contents
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectController : Controller
+    [Authorize]
+    public class ProjectController : BaseController<IProjectService>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public readonly IProjectService _projectService;
-        public readonly IMapper _mapper;
 
-        public ProjectController(IProjectService projectService, IMapper mapper, IUnitOfWork unitOfWork)
+        public ProjectController(
+            IProjectService service,
+            UserManager<AppUser> userManager)
+            : base(service, userManager)
         {
-            _projectService = projectService;
-            _mapper = mapper;
-            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
         public async Task<ActionResult<ProjectReponse>> GetAllProject([FromQuery] ProjectRequest request)
         {
-            var data = await _projectService.GetAllProjectAsync(request);
-            return Ok(data);
+            try
+            {
+                var data = await service.GetProjectsInClass(request);
+                return Ok(data);
+            }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.Status, ex.Message);
+            }
         }
 
-        [HttpGet("projectId")]
-        public async Task<ActionResult<ProjectReponse>> GetProjectById(int projectId)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProjectDto>> GetProjectById(int id)
         {
-            var data = await _projectService.GetProjectById(projectId);
-            return Ok(data);
+            try
+            {
+                var data = await service.GetProjectById(id);
+                return Ok(data);
+            }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.Status, ex.Message);
+            }
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewProject([FromBody] CreateAndUpdateProjectDto data)
+        public async Task<IActionResult> CreateProject([FromBody] CreateProjectDto request)
         {
-            var map = _mapper.Map<Project>(data);
-            var result = await _projectService.InsertAsync(map);
-            await _unitOfWork.SaveChangesAsync();
-            return Ok("Add successfully ");
+            try
+            {
+                await service.CreateProject(request);
+                return Ok("Add successfully ");
+            }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.Status, ex.Message);
+            }
         }
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProject(int id, [FromBody] CreateAndUpdateProjectDto input)
+        public async Task<IActionResult> UpdateProject(int id, [FromBody] UpdateProjectDto request)
         {
-            var data = await _projectService.GetById(id);
-            if (data == null)
+            try
             {
-                return NotFound("Not found project");
-            }
-            else
-            {
-                var map = _mapper.Map(input, data);
-                var result = await _projectService.UpdateAsync(map);
-                await _unitOfWork.SaveChangesAsync();
+                await service.UpdateProject(id, request);
                 return Ok("Update Successfully");
             }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.Status, ex.Message);
+            }
+        }
 
+        [HttpPost("add-members-to-project")]
+        public async Task<IActionResult> AddMembersToProject(MemberInProjectRequest request)
+        {
+            try
+            {
+                var response = await service.AddMembersToProject(request);
+                return Ok(response);
+            }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.Status, ex.Message);
+            }
         }
     }
 }

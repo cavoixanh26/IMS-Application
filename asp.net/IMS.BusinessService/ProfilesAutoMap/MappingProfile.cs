@@ -5,6 +5,7 @@ using IMS.Contract.Contents.Milestones;
 using IMS.Contract.Contents.Projects;
 using IMS.Contract.Contents.Settings;
 using IMS.Contract.Contents.Subjects;
+using IMS.Contract.Dtos.Members;
 using IMS.Contract.Dtos.Students;
 using IMS.Contract.Systems.Roles;
 using IMS.Contract.Systems.Users;
@@ -48,8 +49,13 @@ public class MappingProfile : Profile
 		CreateMap<UpdateMilestoneDto , Milestone>().ReverseMap();
 
         //Project 
-        CreateMap<CreateAndUpdateProjectDto, Project>().ReverseMap();
-        CreateMap<ProjectDto, Project>().ReverseMap();
+        CreateMap<Project, CreateProjectDto>().ReverseMap();
+        CreateMap<Project, ProjectDto>()
+			.ReverseMap();
+		CreateMap<Project, UpdateProjectDto>().ReverseMap();
+		CreateMap<ProjectMember, MemberDto>()
+			.ForMember(dest => dest.MemberId, opt => opt.MapFrom(src => src.UserId))
+			.ReverseMap();
 
         //Class
         CreateMap<CreateAndUpdateClassDto, Class>().ReverseMap();

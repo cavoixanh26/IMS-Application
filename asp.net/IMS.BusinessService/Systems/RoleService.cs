@@ -138,9 +138,9 @@ public class RoleService : ServiceBase<AppRole>, IRoleService
 		}
 	}
 
-    public async Task AssignRoleForUser(string userId, string roleId)
+    public async Task AssignRoleForUser(string userId, string roleName)
     {
-		var role = await _roleManager.FindByIdAsync(roleId);
+		var role = await _roleManager.FindByNameAsync(roleName);
 		if (role == null)
 			throw HttpException.NotFoundException("Not found role");
 		var user = await _userManager.FindByIdAsync(userId);

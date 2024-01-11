@@ -6,9 +6,12 @@ namespace IMS.Contract.ExceptionHandling;
 public class HttpException : Exception
 {
     public HttpStatusCode Status { get; }
+    public string Message { get; set; }
 
-	public HttpException(HttpStatusCode statusCode, string message)
+    public HttpException(HttpStatusCode statusCode, string message)
     {
+        Status = statusCode;
+        Message = message;
     }
 
     // bad request - 400

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Data;
 using ClosedXML.Excel;
+using IMS.Contract.ExceptionHandling;
 
 namespace IMS.Api.APIControllers.Contents;
 
@@ -41,8 +42,15 @@ public class ClassController : BaseController<IClassService>
     [HttpGet("{id}")]
     public async Task<ActionResult<ClassDto>> GetClassByid(int id)
     {
-        var data = await service.GetClassById(id);
-        return Ok(data);
+        try
+        {
+            var data = await service.GetClassById(id);
+            return Ok(data);
+        }
+        catch (HttpException ex)
+        {
+            return StatusCode((int)ex.Status, ex.Message);
+        }
     }
 
     [HttpPost]

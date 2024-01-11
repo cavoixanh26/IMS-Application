@@ -7,6 +7,7 @@ using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Classes;
 using IMS.Contract.Dtos.Students;
 using IMS.Contract.ExceptionHandling;
+using IMS.Contract.Systems.Roles;
 using IMS.Domain.Contents;
 using IMS.Domain.Systems;
 using IMS.Infrastructure.EnityFrameworkCore;
@@ -19,14 +20,18 @@ namespace IMS.BusinessService.Systems
     public class ClassService : ServiceBase<Class>, IClassService
     {
         private readonly UserManager<AppUser> userManager;
+        private readonly IRoleService roleService;
+
         public ClassService(
             IMSDbContext context, 
             IMapper mapper,
             IUnitOfWork unitOfWork,
-            UserManager<AppUser> userManager) 
+            UserManager<AppUser> userManager,
+            IRoleService roleService) 
             : base(context, mapper, unitOfWork)
         {
             this.userManager = userManager;
+            this.roleService = roleService;
         }
 
         public async Task<ClassReponse> GetClasses(ClassRequest request, AppUser currentUser)
@@ -76,6 +81,9 @@ namespace IMS.BusinessService.Systems
                 .Include(x => x.ClassStudents)
             .FirstOrDefaultAsync(u => u.Id == classId);
 
+            if (classes == null)
+                throw HttpException.NotFoundException("not found");
+
             var classDto = mapper.Map<ClassDto>(classes);
             return classDto;
         }
@@ -107,9 +115,18 @@ namespace IMS.BusinessService.Systems
 
             var classEntity = await context.Classes.FindAsync(id);
             if (classEntity == null)
-            {
                 throw HttpException.NotFoundException("Not found");
+
+            if (request.AssigneeId.HasValue)
+            {
+                var teacher = await userManager.FindByIdAsync(request.AssigneeId.ToString());
+                var checkRoleTeacher = await userManager.IsInRoleAsync(teacher, RoleDefault.Teacher);
+                if (!checkRoleTeacher)
+                {
+                    await roleService.AssignRoleForUser(teacher.Id.ToString(), RoleDefault.Teacher);
+                }
             }
+
             mapper.Map(request, classEntity);
 
             context.Entry(classEntity).State = EntityState.Modified;

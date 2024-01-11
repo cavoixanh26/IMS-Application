@@ -122,10 +122,9 @@ public class SubjectService : ServiceBase<Subject>, ISubjectService
         {
             var manager = await userManager.FindByIdAsync(request.ManagerId.ToString());
             var checkRoleManager = await userManager.IsInRoleAsync(manager, RoleDefault.Manager);
-            var managerRole = await roleManager.FindByNameAsync(RoleDefault.Manager);
-            if (!checkRoleManager && managerRole is not null)
+            if (!checkRoleManager)
             {
-                await roleService.AssignRoleForUser(manager.Id.ToString(), managerRole.Id.ToString());
+                await roleService.AssignRoleForUser(manager.Id.ToString(), RoleDefault.Manager);
             }
         }
         

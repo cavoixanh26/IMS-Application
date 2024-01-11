@@ -1,4 +1,5 @@
-﻿using IMS.Domain.Contents;
+﻿using IMS.Contract.Dtos.Members;
+using IMS.Domain.Contents;
 using IMS.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -17,13 +18,6 @@ namespace IMS.Contract.Contents.Projects
         public string? AvatarUrl { get; set; }
         public ProjectStatus Status { get; set; }
         public int ClassId { get; set; }
-        [NotMapped]
-        public IList<ProjectMember> ProjectMembers { get; set; }
-        [NotMapped]
-        public IList<Milestone> Milestones { get; set; }
-        [NotMapped]
-        public IList<Issue> Issues { get; set; }
-        [NotMapped]
-        public IList<IssueSetting>? IssueSettings { get; set; }
+        public IList<MemberDto>? ProjectMembers { get; set; }
     }
 }
