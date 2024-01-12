@@ -44,6 +44,8 @@ import { IssueDetailComponent } from './issue/issue-detail/issue-detail.componen
 import { TabViewModule } from 'primeng/tabview';
 import { CardModule } from 'primeng/card';
 import { DataViewModule } from 'primeng/dataview';
+import { ProjectModalComponent } from './class/project-modal/project-modal.component';
+import { SpeedDialModule } from 'primeng/speeddial';
 @NgModule({
   declarations: [
     SubjectComponent,
@@ -57,6 +59,7 @@ import { DataViewModule } from 'primeng/dataview';
     ClassModalComponent,
     ClassDetailComponent,
     IssueDetailComponent,
+    ProjectModalComponent,
   ],
   imports: [
     CommonModule,
@@ -97,6 +100,7 @@ import { DataViewModule } from 'primeng/dataview';
     TabViewModule,
     CardModule,
     DataViewModule,
+    SpeedDialModule,
   ],
 })
 export class ContentModule {}

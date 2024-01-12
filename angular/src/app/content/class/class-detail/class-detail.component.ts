@@ -8,6 +8,7 @@ import { MessageConstants } from 'src/app/shared/constants/message.const';
 import { FileService } from 'src/app/shared/services/file.service';
 import { NotificationService } from 'src/app/shared/services/notification.service';
 import { UtilityService } from 'src/app/shared/services/utility.service';
+import { ProjectModalComponent } from '../project-modal/project-modal.component';
 
 @Component({
   selector: 'app-class-detail',
@@ -287,7 +288,23 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
 
 
   showDialogCreateProject() {
-    
+    const ref = this.dialogService.open(ProjectModalComponent, {
+      header: 'Add new project',
+      width: '70%',
+      data: {
+        classId: this.classId,
+      },
+    });
+
+    ref.onClose.subscribe((isSuccess: boolean) => {
+      if (isSuccess == true) {
+        this.notificationService.showSuccess(MessageConstants.CREATED_OK_MSG);
+        this.loadDataProjects();
+      }
+      if (isSuccess == false) {
+        this.notificationService.showError(MessageConstants.CREATED_FALL_MSG);
+      }
+    });
   }
 
 

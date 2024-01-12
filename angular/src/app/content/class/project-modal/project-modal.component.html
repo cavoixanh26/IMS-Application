@@ -1,0 +1,53 @@
+<form
+  class="form-horizontal form-label-left"
+  skipValidation
+  [formGroup]="form"
+  (ngSubmit)="saveChangeProject()"
+>
+<p-panel header="Information of your project">
+    <div class="formgrid grid">
+      <div class="field col-12">
+        <label for="name">Name<span class="required">*</span></label>
+        <input
+          id="name"
+          type="text"
+          pInputText
+          formControlName="name"
+          [style]="{ width: '100%' }"
+        />
+        <app-validation-message
+          fieldName="name"
+          [validationMessages]="validationMessages"
+          [entityForm]="form"
+        ></app-validation-message>
+      </div>
+      <div class="field col-12">
+        <label for="description"
+          >Description<span class="required">*</span></label
+        >
+        <input
+          id="description"
+          type="text"
+          pInputText
+          formControlName="description"
+          [style]="{ width: '100%' }"
+        />
+        <app-validation-message
+          fieldName="description"
+          [validationMessages]="validationMessages"
+          [entityForm]="form"
+        ></app-validation-message>
+      </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="!form.valid"
+            label="Save"
+        >
+        </button>
+    </ng-template>
+</p-panel>
+</form>
