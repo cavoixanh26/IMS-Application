@@ -28,7 +28,7 @@ namespace IMS.Api.APIControllers.Contents
         }
 
         [HttpGet]
-        public async Task<ActionResult<ProjectReponse>> GetAllProject([FromQuery] ProjectRequest request)
+        public async Task<ActionResult<ProjectResponse>> GetAllProject([FromQuery] ProjectRequest request)
         {
             try
             {

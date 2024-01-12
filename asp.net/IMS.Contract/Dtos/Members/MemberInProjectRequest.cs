@@ -10,5 +10,7 @@ public class MemberInProjectRequest
 public class MemberDto
 {
     public Guid MemberId { get; set; }
+    public string FullName { get; set; }
+    public string Email { get; set; }
     public bool IsTeamleader { get; set; }
 }

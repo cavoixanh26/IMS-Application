@@ -30,10 +30,11 @@ namespace IMS.BusinessService.Systems
         {
         }
 
-        public async Task<ProjectReponse> GetProjectsInClass(ProjectRequest request)
+        public async Task<ProjectResponse> GetProjectsInClass(ProjectRequest request)
         {
             var projects = await context.Projects
                 .Include(x => x.ProjectMembers)
+                .ThenInclude(y => y.User)
                 .Where(u => u.ClassId == request.ClassId 
                 && (string.IsNullOrWhiteSpace(request.KeyWords)
                 || u.Name.Contains(request.KeyWords)
@@ -43,7 +44,7 @@ namespace IMS.BusinessService.Systems
 
             var projectDtos = mapper.Map<List<ProjectDto>>(projects.Paginate(request));
 
-            var response = new ProjectReponse
+            var response = new ProjectResponse
             {
                 Projects = projectDtos,
                 Page = GetPagingResponse(request, projects.Count()),
@@ -56,6 +57,7 @@ namespace IMS.BusinessService.Systems
         {
             var subject = await context.Projects
                .Include(x => x.ProjectMembers)
+               .ThenInclude(y => y.User)
                .FirstOrDefaultAsync(u => u.Id == Id);
 
             if (subject == null)

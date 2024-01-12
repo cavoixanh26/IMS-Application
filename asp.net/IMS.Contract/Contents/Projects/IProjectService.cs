@@ -11,7 +11,7 @@ namespace IMS.Contract.Contents.Projects
 {
     public interface IProjectService : IGenericRepository<Project>
     {
-        Task<ProjectReponse> GetProjectsInClass(ProjectRequest request);
+        Task<ProjectResponse> GetProjectsInClass(ProjectRequest request);
         Task<ProjectDto> GetProjectById(int Id);
         Task CreateProject(CreateProjectDto request);
         Task UpdateProject(int id, UpdateProjectDto request);

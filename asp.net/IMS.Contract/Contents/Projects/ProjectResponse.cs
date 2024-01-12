@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IMS.Contract.Contents.Projects
 {
-    public class ProjectReponse : PagingResponsse
+    public class ProjectResponse : PagingResponsse
     {
         public IList<ProjectDto> Projects{ get; set; }
     }

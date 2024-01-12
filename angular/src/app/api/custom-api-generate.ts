@@ -1559,3 +1559,124 @@ export interface CreateUpdateIssueDto {
   issueSettingId?: number | undefined;
   milestoneId?: number;
 }
+
+
+
+
+
+
+
+
+
+
+
+// downTemplateAddStudents(): Observable<Blob> {
+//         let url_ = this.baseUrl + "/api/Class/down-template-add-students";
+//         url_ = url_.replace(/[?&]$/, "");
+
+//         let options_ : any = {
+//             observe: "response",
+//             responseType: "blob",
+//             headers: new HttpHeaders({
+//             })
+//         };
+
+//         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+//             return this.processDownTemplateAddStudents(response_);
+//         })).pipe(_observableCatch((response_: any) => {
+//             if (response_ instanceof HttpResponseBase) {
+//                 try {
+//                     return this.processDownTemplateAddStudents(response_ as any);
+//                 } catch (e) {
+//                     return _observableThrow(e) as any as Observable<Blob>;
+//                 }
+//             } else
+//                 return _observableThrow(response_) as any as Observable<Blob>;
+//         }));
+//     }
+
+//     protected processDownTemplateAddStudents(response: HttpResponseBase): Observable<Blob> {
+//         const status = response.status;
+//         const responseBlob =
+//             response instanceof HttpResponse ? response.body :
+//             (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+//         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+//         if (status === 200) {
+//             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+//             return _observableOf(null as any);
+//             }));
+//         } else if (status !== 200 && status !== 204) {
+//             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+//             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+//             }));
+//         }
+//         return _observableOf(null as any);
+//     }
+
+//     /**
+//      * @param classId (optional) 
+//      * @param formFile (optional) 
+//      * @return Success
+//      */
+//     importStudents(classId: number | undefined, formFile: FileParameter | undefined): Observable<void> {
+//         let url_ = this.baseUrl + "/api/Class/import-students?";
+//         if (classId === null)
+//             throw new Error("The parameter 'classId' cannot be null.");
+//         else if (classId !== undefined)
+//             url_ += "classId=" + encodeURIComponent("" + classId) + "&";
+//         url_ = url_.replace(/[?&]$/, "");
+
+//         const content_ = new FormData();
+//         if (formFile === null || formFile === undefined)
+//             throw new Error("The parameter 'formFile' cannot be null.");
+//         else {
+//             if (formFile.data instanceof Blob) {
+//                 content_.append("formFile", formFile.data, formFile.fileName ? formFile.fileName : "formFile");
+//             } else {
+//                 throw new Error("Invalid file :)))");
+//             }
+//         }
+
+//         let options_ : any = {
+//             body: content_,
+//             observe: "response",
+//             responseType: "blob",
+//             headers: new HttpHeaders({
+//             })
+//         };
+
+//         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+//             return this.processImportStudents(response_);
+//         })).pipe(_observableCatch((response_: any) => {
+//             if (response_ instanceof HttpResponseBase) {
+//                 try {
+//                     return this.processImportStudents(response_ as any);
+//                 } catch (e) {
+//                     return _observableThrow(e) as any as Observable<void>;
+//                 }
+//             } else
+//                 return _observableThrow(response_) as any as Observable<void>;
+//         }));
+//     }
+
+//     protected processImportStudents(response: HttpResponseBase): Observable<void> {
+//         const status = response.status;
+//         const responseBlob =
+//             response instanceof HttpResponse ? response.body :
+//             (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+//         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+//         if (status === 200) {
+//             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+//             return _observableOf(null as any);
+//             }));
+//         } else if (status !== 200 && status !== 204) {
+//             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+//             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+//             }));
+//         }
+//         return _observableOf(null as any);
+//     }
+
+  

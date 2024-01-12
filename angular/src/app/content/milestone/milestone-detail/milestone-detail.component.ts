@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Subject, forkJoin, takeUntil } from 'rxjs';
-import { ClassClient, ClassReponse, MilestoneClient, MilestoneDto, ProjectClient, ProjectDto, ProjectReponse } from 'src/app/api/api-generate';
+import { ClassClient, ClassReponse, MilestoneClient, MilestoneDto, ProjectClient, ProjectDto, ProjectResponse } from 'src/app/api/api-generate';
 import { UtilityService } from 'src/app/shared/services/utility.service';
 
 @Component({
@@ -161,24 +161,24 @@ export class MilestoneDetailComponent implements OnInit, OnDestroy {
   }
 
   loadProjects() {
-    this.projectService
-      .projectGET(
-        undefined,
-        this.keyWords,
-        this.page,
-        this.itemsPerPage,
-        this.skip,
-        this.take,
-        this.sortField
-      )
-      .subscribe((response: ProjectReponse) => {
-        response.projects.forEach((project) => {
-          this.projectList.push({
-            label: project.name,
-            value: project.id,
-          });
-        });
-      });
+    // this.projectService
+    //   .projectGET(
+    //     undefined,
+    //     this.keyWords,
+    //     this.page,
+    //     this.itemsPerPage,
+    //     this.skip,
+    //     this.take,
+    //     this.sortField
+    //   )
+    //   .subscribe((response: ProjectReponse) => {
+    //     response.projects.forEach((project) => {
+    //       this.projectList.push({
+    //         label: project.name,
+    //         value: project.id,
+    //       });
+    //     });
+    //   });
   }
 
   loadClasses() {

@@ -41,6 +41,9 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ClassModalComponent } from './class/class-modal/class-modal.component';
 import { ClassDetailComponent } from './class/class-detail/class-detail.component';
 import { IssueDetailComponent } from './issue/issue-detail/issue-detail.component';
+import { TabViewModule } from 'primeng/tabview';
+import { CardModule } from 'primeng/card';
+import { DataViewModule } from 'primeng/dataview';
 @NgModule({
   declarations: [
     SubjectComponent,
@@ -90,7 +93,10 @@ import { IssueDetailComponent } from './issue/issue-detail/issue-detail.componen
     ContentRoutingModule,
     AccordionModule,
     RadioButtonModule,
-    MultiSelectModule
+    MultiSelectModule,
+    TabViewModule,
+    CardModule,
+    DataViewModule,
   ],
 })
-export class ContentModule { }
+export class ContentModule {}

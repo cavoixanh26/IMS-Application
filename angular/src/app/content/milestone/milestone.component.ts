@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
-import { ClassClient, ClassReponse, MilestoneClient, MilestoneDto, MilestoneResponse, ProjectClient, ProjectDto, ProjectReponse } from 'src/app/api/api-generate';
+import { ClassClient, ClassReponse, MilestoneClient, MilestoneDto, MilestoneResponse, ProjectClient, ProjectDto, ProjectResponse } from 'src/app/api/api-generate';
 import { NotificationService } from 'src/app/shared/services/notification.service';
 import { MilestoneDetailComponent } from './milestone-detail/milestone-detail.component';
 import { MessageConstants } from 'src/app/shared/constants/message.const';
@@ -90,24 +90,24 @@ export class MilestoneComponent implements OnInit, OnDestroy {
   }
 
   loadProjects() {
-    this.projectService
-      .projectGET(
-        undefined,
-        this.keyWords,
-        this.page,
-        this.itemsPerPage,
-        this.skip,
-        this.take,
-        this.sortField
-      )
-      .subscribe((response: ProjectReponse) => {
-        response.projects.forEach((project) => {
-          this.projectList.push({
-            label: project.name,
-            value: project.id,
-          });
-        });
-      });
+    // this.projectService
+    //   .projectGET(
+    //     undefined,
+    //     this.keyWords,
+    //     this.page,
+    //     this.itemsPerPage,
+    //     this.skip,
+    //     this.take,
+    //     this.sortField
+    //   )
+    //   .subscribe((response: ProjectReponse) => {
+    //     response.projects.forEach((project) => {
+    //       this.projectList.push({
+    //         label: project.name,
+    //         value: project.id,
+    //       });
+    //     });
+    //   });
   }
 
   loadClasses() {

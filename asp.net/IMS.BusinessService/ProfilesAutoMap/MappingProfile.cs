@@ -55,6 +55,8 @@ public class MappingProfile : Profile
 		CreateMap<Project, UpdateProjectDto>().ReverseMap();
 		CreateMap<ProjectMember, MemberDto>()
 			.ForMember(dest => dest.MemberId, opt => opt.MapFrom(src => src.UserId))
+			.ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
+			.ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
 			.ReverseMap();
 
         //Class

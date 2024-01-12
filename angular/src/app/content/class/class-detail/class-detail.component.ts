@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
-import { AddStudentInClassRequest, ClassClient, ClassDto, FileParameter, ProjectClient, ProjectDto, ProjectReponse, StudentDto, StudentResponse, UserClient, UserDto, UserResponse } from 'src/app/api/api-generate';
+import { AddStudentInClassRequest, ClassClient, ClassDto, FileParameter, ProjectClient, ProjectDto, ProjectResponse, StudentDto, StudentResponse, UserClient, UserDto, UserResponse } from 'src/app/api/api-generate';
 import { MessageConstants } from 'src/app/shared/constants/message.const';
 import { FileService } from 'src/app/shared/services/file.service';
 import { NotificationService } from 'src/app/shared/services/notification.service';
@@ -41,6 +41,9 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
   public selectedItemsProject: ProjectDto[] = [];
 
   public selectedStudents: any[] = [];
+
+  public projectStatus: any;
+
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -102,23 +105,44 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
       });
   }
 
-  loadDataProjects(selectionId = null) {
-    //   this.toggleBlockUI(true);
-    //   this.projectService
-    //   .projectGET(this.classId,this.keyWords, this.page, this.itemsPerPage, this.skip, this.take, this.sortField)
-    //     .pipe(takeUntil(this.ngUnsubscribe))
-    //     .subscribe({
-    //       next: (response: ProjectReponse) => {
-    //         this.itemsProject = response.projects;
-    //         if (selectionId != null && this.items.length > 0) {
-    //           this.selectedItemsProject = this.itemsProject.filter(x => x.id == selectionId);
-    //         }
-    //         this.toggleBlockUI(false);
-    //       },
-    //       error: () => {
-    //         this.toggleBlockUI(false);
-    //       },
-    //     });
+  //Paging variables
+  public pageProject: number = 1;
+  public itemsPerPageProject: number = 5;
+  public totalCountProject: number;
+  public keyWordsProject: string | null;
+  public skipProject: number | null;
+  public takeProject: number | null;
+  public sortFieldProject: string | null;
+  loadDataProjects() {
+    this.toggleBlockUI(true);
+    this.projectService
+      .projectGET(
+        this.classId,
+        this.projectStatus,
+        this.keyWordsProject,
+        this.pageProject,
+        this.itemsPerPageProject,
+        this.skipProject,
+        this.takeProject,
+        this.sortFieldProject
+      )
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
+        next: (response: ProjectResponse) => {
+          this.itemsProject = response.projects;
+          this.totalCountProject = response.page.toTalRecord;
+          this.toggleBlockUI(false);
+        },
+        error: () => {
+          this.toggleBlockUI(false);
+        },
+      });
+  }
+
+  pageProjectChanged(event: any): void {
+    this.pageProject = event.pageProject + 1;
+    this.itemsPerPageProject = event.rows;
+    this.loadDataProjects();
   }
 
   loadStudents() {
@@ -204,20 +228,6 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  activeIndex: number = -1; // Khởi tạo activeIndex với giá trị mặc định
-
-  onTabClick(index: number) {
-    if (this.activeIndex === index) {
-      // Nếu tab đã được chọn rồi, bỏ chọn nó
-      this.activeIndex = null;
-      this.selectedItemsProject = [];
-    } else {
-      // Nếu tab chưa được chọn, chọn nó và cập nhật selectedItems
-      this.activeIndex = index;
-      this.selectedItemsProject = [this.itemsProject[index]];
-    }
-  }
-
   downLoadTemplateExcel() {
     this.classService.downTemplateAddStudents().subscribe(
       (response: any) => {
@@ -248,31 +258,37 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
       const file = files[0];
       const reader = new FileReader();
       reader.onload = (event) => {
-         const fileData = event.target.result as ArrayBuffer;
-         const blob = new Blob([fileData], {
-           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-         });
+        const fileData = event.target.result as ArrayBuffer;
+        const blob = new Blob([fileData], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
 
-         const formFile: FileParameter = {
-           data: blob,
-           fileName: file.name,
-         };
-         this.classService
-           .importStudents(this.classId, formFile)
-           .pipe(takeUntil(this.ngUnsubscribe))
-           .subscribe(
-             (response) => {
-               // Xử lý khi file được upload thành công (nếu cần)
-               console.log('File uploaded successfully:', response);
-             },
-             (error) => {
-               // Xử lý khi có lỗi xảy ra trong quá trình upload file
-               console.error('Error uploading file:', error);
-             }
-        );
-        
+        const formFile: FileParameter = {
+          data: blob,
+          fileName: file.name,
+        };
+        this.classService
+          .importStudents(this.classId, formFile)
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe(
+            (response) => {
+              // Xử lý khi file được upload thành công (nếu cần)
+              console.log('File uploaded successfully:', response);
+            },
+            (error) => {
+              // Xử lý khi có lỗi xảy ra trong quá trình upload file
+              console.error('Error uploading file:', error);
+            }
+          );
       };
       reader.readAsArrayBuffer(file);
     }
   }
+
+
+  showDialogCreateProject() {
+    
+  }
+
+
 }
