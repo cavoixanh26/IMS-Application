@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MenuItem } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
 import { AddStudentInClassRequest, ClassClient, ClassDto, FileParameter, ProjectClient, ProjectDto, ProjectResponse, StudentDto, StudentResponse, UserClient, UserDto, UserResponse } from 'src/app/api/api-generate';
@@ -45,7 +45,6 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
 
   public projectStatus: any;
 
-
   constructor(
     private activatedRoute: ActivatedRoute,
     public dialogService: DialogService,
@@ -65,6 +64,8 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
     this.loadStudentList();
     this.loadDataProjects();
     this.loadStudents();
+
+    
   }
 
   loadDetailClass(id: number) {
@@ -286,7 +287,6 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-
   showDialogCreateProject() {
     const ref = this.dialogService.open(ProjectModalComponent, {
       header: 'Add new project',
@@ -307,5 +307,24 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  updateProject(projectId: number) {
+    const ref = this.dialogService.open(ProjectModalComponent, {
+      header: 'Update project',
+      width: '70%',
+      data: {
+        classId: this.classId,
+        projectId: projectId,
+      },
+    });
 
+    ref.onClose.subscribe((isSuccess: boolean) => {
+      if (isSuccess == true) {
+        this.notificationService.showSuccess(MessageConstants.UPDATED_OK_MSG);
+        this.loadDataProjects();
+      }
+      if (isSuccess == false) {
+        this.notificationService.showError(MessageConstants.UPDATED_FALL_MSG);
+      }
+    });
+  }
 }

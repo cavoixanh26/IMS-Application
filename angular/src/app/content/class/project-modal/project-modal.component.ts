@@ -27,25 +27,59 @@ export class ProjectModalComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.initFormData();
     this.buildFormProject();
+    this.initFormData();
   }
 
   initFormData() {
     this.classId = this.config.data.classId;
-    if (this.utilService.isEmpty(this.config.data?.id) == false) {
+    if (this.utilService.isEmpty(this.config.data?.projectId) == false) {
+      this.loadDetailProject(this.config.data?.projectId);
     }
   }
-  saveChangeProject() {
-    this.projectService.projectPOST(this.form.value).pipe(takeUntil(this.ngUnsubscribe))
+
+  loadDetailProject(id: number) {
+    this.projectService.projectGET2(id)
+      .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
-        next: () => {
-          this.ref.close(true);
+        next: (response) => {
+          this.createProjectRequest = response;
+          this.buildFormProject();
         },
         error: () => {
-          this.ref.close(false);
+          console.log('error');
         }
-      });
+    })
+  }
+
+  saveChangeProject() {
+    if (this.utilService.isEmpty(this.config.data?.projectId) == true) {
+      this.projectService
+        .projectPOST(this.form.value)
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe({
+          next: () => {
+            this.ref.close(true);
+          },
+          error: () => {
+            this.ref.close(false);
+          },
+        });
+    } else {
+      let projectId: number = this.config.data?.projectId;
+      this.projectService
+        .projectPUT(projectId, this.form.value)
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe({
+          next: () => {
+            this.ref.close(true);
+          },
+          error: () => {
+            this.ref.close(false);
+          },
+        });
+      
+    }
   }
 
   validationMessages = {
