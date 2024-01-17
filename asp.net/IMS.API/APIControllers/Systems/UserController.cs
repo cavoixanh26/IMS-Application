@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using IMS.BusinessService.Systems;
+using IMS.Contract.ExceptionHandling;
 using IMS.Contract.Systems.Roles;
 using IMS.Contract.Systems.Users;
 using IMS.Domain.Systems;
@@ -80,6 +81,20 @@ namespace IMS.Api.APIControllers.Systems
 		{
 			await service.UpdateUser(id, input);
 			return Ok("User updated successfully.");
+		}
+
+		[HttpGet("user-by-role")]
+		public async Task<ActionResult<List<UserDto>>> GetUsersByRole(string roleName)
+		{
+			try
+			{
+				var response = await service.GetUserByRoleName(roleName);
+				return Ok(response);
+			}
+			catch (HttpException ex)
+			{
+				return StatusCode((int)ex.Status, ex.Message);
+			}
 		}
 	}
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ProjectDto, CreateProjectDto, ProjectClient } from '../../../api/api-generate';
+import { ProjectDto, CreateProjectDto, ProjectClient, MemberDto, UserDto, ClassClient, StudentResponse } from '../../../api/api-generate';
 import { UtilityService } from 'src/app/shared/services/utility.service';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
@@ -15,6 +15,11 @@ export class ProjectModalComponent implements OnInit {
   createProjectRequest = {} as CreateProjectDto;
   classId: number;
   public btnSaveName: string;
+
+  public members: MemberDto[];
+
+  public studentsInClass: any[]=[];
+  public selectedStudents: any[]=[];
   /**
    *
    */
@@ -23,33 +28,50 @@ export class ProjectModalComponent implements OnInit {
     private utilService: UtilityService,
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
-    private projectService: ProjectClient
+    private projectService: ProjectClient,
+    public classService: ClassClient,
   ) {}
 
   ngOnInit(): void {
+    this.classId = this.config.data.classId;
     this.buildFormProject();
     this.initFormData();
+    this.loadStudentInClass(this.classId);
+  }
+
+  loadStudentInClass(classId: number) {
+    this.classService.studentsList(classId, undefined, undefined, undefined, undefined, undefined, undefined)
+    .pipe(takeUntil(this.ngUnsubscribe))
+    .subscribe((response: StudentResponse) => {
+      response.students.forEach((s) => {
+        this.studentsInClass.push({
+          label: s.email,
+          value: s.id,
+        });
+      })
+    })
   }
 
   initFormData() {
-    this.classId = this.config.data.classId;
     if (this.utilService.isEmpty(this.config.data?.projectId) == false) {
       this.loadDetailProject(this.config.data?.projectId);
     }
   }
 
   loadDetailProject(id: number) {
-    this.projectService.projectGET2(id)
+    this.projectService
+      .projectGET2(id)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (response) => {
           this.createProjectRequest = response;
+          this.members = response.projectMembers;
           this.buildFormProject();
         },
         error: () => {
           console.log('error');
-        }
-    })
+        },
+      });
   }
 
   saveChangeProject() {
@@ -78,7 +100,6 @@ export class ProjectModalComponent implements OnInit {
             this.ref.close(false);
           },
         });
-      
     }
   }
 

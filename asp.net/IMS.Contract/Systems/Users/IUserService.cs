@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IMS.Contract.Systems.Authentications;
+using IMS.Domain.Systems;
 
 namespace IMS.Contract.Systems.Users
 {
@@ -19,5 +20,7 @@ namespace IMS.Contract.Systems.Users
         Task UpdateUser(Guid id,UpdateUserDto userDto);
         
         Task<UserDto> GetUserByIdAsync(Guid id);
+
+        Task<List<UserDto>> GetUserByRoleName(string roleName);
     }
 }

@@ -23,9 +23,9 @@ namespace IMS.BusinessService.Systems
     {
 
         public ProjectService(
-            IMSDbContext context, 
+            IMSDbContext context,
             IMapper mapper,
-            IUnitOfWork unitOfWork) 
+            IUnitOfWork unitOfWork)
             : base(context, mapper, unitOfWork)
         {
         }
@@ -35,7 +35,7 @@ namespace IMS.BusinessService.Systems
             var projects = await context.Projects
                 .Include(x => x.ProjectMembers)
                 .ThenInclude(y => y.User)
-                .Where(u => u.ClassId == request.ClassId 
+                .Where(u => u.ClassId == request.ClassId
                 && (string.IsNullOrWhiteSpace(request.KeyWords)
                 || u.Name.Contains(request.KeyWords)
                 || u.Description.Contains(request.KeyWords))
@@ -108,18 +108,21 @@ namespace IMS.BusinessService.Systems
                 var isExistStudentInClass = await context.ClassStudents
                                                 .AnyAsync(x => x.ClassId == project.ClassId
                                                             && x.StudentId == memberRequest.MemberId);
-                if (isExistStudentInClass)
+                var isExistMember = await context.ProjectMembers
+                    .AnyAsync(x => x.UserId == memberRequest.MemberId
+                            && x.ProjectId == request.ProjectId);
+                if (isExistMember || !isExistStudentInClass)
+                    continue;
+
+                var projectMember = new ProjectMember
                 {
-                    var projectMember = new ProjectMember
-                    {
-                        ProjectId = request.ProjectId,
-                        UserId = memberRequest.MemberId,
-                        IsTeamleader = memberRequest.IsTeamleader && !hasTeamLeader,
-                    };
-                    if (memberRequest.IsTeamleader)
-                        hasTeamLeader = true;
-                    await context.ProjectMembers.AddAsync(projectMember);
-                }
+                    ProjectId = request.ProjectId,
+                    UserId = memberRequest.MemberId,
+                    IsTeamleader = memberRequest.IsTeamleader && !hasTeamLeader,
+                };
+                if (memberRequest.IsTeamleader)
+                    hasTeamLeader = true;
+                await context.ProjectMembers.AddAsync(projectMember);
             }
             await unitOfWork.SaveChangesAsync();
             var projectDto = mapper.Map<ProjectDto>(project);

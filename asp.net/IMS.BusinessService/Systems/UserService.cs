@@ -14,8 +14,8 @@ namespace IMS.BusinessService.Systems;
 
 public class UserService : ServiceBase<AppUser>, IUserService
 {
-    private readonly UserManager<AppUser> _userManager;
-    private readonly RoleManager<AppRole> _roleManager;
+    private readonly UserManager<AppUser> userManager;
+    private readonly RoleManager<AppRole> roleManager;
     private readonly IFirebaseService firebaseService;
     public UserService(
     UserManager<AppUser> userManager,
@@ -26,21 +26,21 @@ public class UserService : ServiceBase<AppUser>, IUserService
         IUnitOfWork unitOfWork)
     : base(context, mapper, unitOfWork)
     {
-        _userManager = userManager;
-        _roleManager = roleManager;
+        this.userManager = userManager;
+        this.roleManager = roleManager;
         this.firebaseService = firebaseService;
     }
 
     public async Task AssignRolesAsync(Guid userId, string[] roleNames)
     {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
+        var user = await userManager.FindByIdAsync(userId.ToString());
         if (user == null)
         {
             throw new Exception("User doesn't exist");
         }
-        var currentRoles = await _userManager.GetRolesAsync(user);
-        var removedResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
-        var addedResult = await _userManager.AddToRolesAsync(user, roleNames);
+        var currentRoles = await userManager.GetRolesAsync(user);
+        var removedResult = await userManager.RemoveFromRolesAsync(user, currentRoles);
+        var addedResult = await userManager.AddToRolesAsync(user, roleNames);
         if (!addedResult.Succeeded || !removedResult.Succeeded)
         {
             List<IdentityError> addedErrorList = addedResult.Errors.ToList();
@@ -60,14 +60,14 @@ public class UserService : ServiceBase<AppUser>, IUserService
 
     public async Task CreateUser(CreateUserDto userDto)
     {
-        var existingUser = await _userManager.FindByNameAsync(userDto.UserName);
+        var existingUser = await userManager.FindByNameAsync(userDto.UserName);
         if (existingUser != null)
         {
             // Tên người dùng đã tồn tại
             throw new Exception("Username is already exist");
         }
 
-        existingUser = await _userManager.FindByEmailAsync(userDto.Email);
+        existingUser = await userManager.FindByEmailAsync(userDto.Email);
         if (existingUser != null)
         {
             // Email đã tồn tại
@@ -75,24 +75,24 @@ public class UserService : ServiceBase<AppUser>, IUserService
         }
 
         var user = mapper.Map<CreateUserDto, AppUser>(userDto);
-        var result = await _userManager.CreateAsync(user, userDto.Password);
+        var result = await userManager.CreateAsync(user, userDto.Password);
 
         if (!result.Succeeded)
         {
             // Xử lý lỗi khi tạo người dùng thất bại
             throw new Exception("Failed to create user. Please check the provided data.");
         }
-        await _userManager.AddToRoleAsync(user, "User");
+        await userManager.AddToRoleAsync(user, "User");
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        var user = await _userManager.FindByIdAsync(id.ToString());
+        var user = await userManager.FindByIdAsync(id.ToString());
         if (user == null)
         {
             throw new Exception("User doesn't exist");
         }
-        await _userManager.DeleteAsync(user);
+        await userManager.DeleteAsync(user);
     }
 
     public async Task<UserResponse> GetListAllAsync(UserRequest request)
@@ -100,14 +100,14 @@ public class UserService : ServiceBase<AppUser>, IUserService
         var usersQuery = new List<AppUser>();   
         if (!string.IsNullOrEmpty(request.RoleName))
         {
-            var role = await _roleManager.FindByNameAsync(request.RoleName);
+            var role = await roleManager.FindByNameAsync(request.RoleName);
             if (role != null)
             {
-                usersQuery = (List<AppUser>)await _userManager.GetUsersInRoleAsync(role.Name);
+                usersQuery = (List<AppUser>)await userManager.GetUsersInRoleAsync(role.Name);
             }
         }else
         {
-            usersQuery = _userManager.Users.ToList();
+            usersQuery = userManager.Users.ToList();
         }
 
         usersQuery = usersQuery
@@ -123,7 +123,7 @@ public class UserService : ServiceBase<AppUser>, IUserService
         foreach (var user in users)
         {
             // Retrieve the roles for each user
-            var roles = await _userManager.GetRolesAsync(user);
+            var roles = await userManager.GetRolesAsync(user);
 
             var userDto = mapper.Map<UserDto>(user);
 
@@ -144,20 +144,27 @@ public class UserService : ServiceBase<AppUser>, IUserService
 
     public async Task<UserDto> GetUserByIdAsync(Guid id)
     {
-        var user = await _userManager.FindByIdAsync(id.ToString());
+        var user = await userManager.FindByIdAsync(id.ToString());
         if (user == null)
         {
             throw new Exception("Not found");
         }
         var userDto = mapper.Map<AppUser, UserDto>(user);
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await userManager.GetRolesAsync(user);
         userDto.Roles = roles;
         return userDto;
     }
 
+    public async Task<List<UserDto>> GetUserByRoleName(string roleName)
+    {
+        var usersInRoleName = await userManager.GetUsersInRoleAsync(roleName);
+        var userDtos = mapper.Map<List<UserDto>>(usersInRoleName);
+        return userDtos;
+    }
+
     public async Task UpdateUser(Guid id, UpdateUserDto userDto)
     {
-        var user = await _userManager.FindByIdAsync(id.ToString());
+        var user = await userManager.FindByIdAsync(id.ToString());
         if (user == null)
         {
             throw new Exception("Not found");
@@ -168,7 +175,7 @@ public class UserService : ServiceBase<AppUser>, IUserService
             var fileName = await firebaseService.UpLoadFileOnFirebaseAsync(userDto.FileImage);
             user.Avatar = fileName;
         }
-        var result = await _userManager.UpdateAsync(user);
+        var result = await userManager.UpdateAsync(user);
     }
 
 }
