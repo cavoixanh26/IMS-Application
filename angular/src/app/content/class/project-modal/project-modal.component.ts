@@ -36,11 +36,11 @@ export class ProjectModalComponent implements OnInit {
     this.classId = this.config.data.classId;
     this.buildFormProject();
     this.initFormData();
-    this.loadStudentInClass(this.classId);
+    this.loadStudentsHaveNotProjectInClass(this.classId);
   }
 
-  loadStudentInClass(classId: number) {
-    this.classService.studentsList(classId, undefined, undefined, undefined, undefined, undefined, undefined)
+  loadStudentsHaveNotProjectInClass(classId: number) {
+    this.classService.studentsList(classId,true, undefined, undefined, undefined, undefined, undefined, undefined)
     .pipe(takeUntil(this.ngUnsubscribe))
     .subscribe((response: StudentResponse) => {
       response.students.forEach((s) => {

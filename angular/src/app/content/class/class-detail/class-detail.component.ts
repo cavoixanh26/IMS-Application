@@ -80,6 +80,7 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
     this.classService
       .studentsList(
         this.classId,
+        false,
         this.keyWords,
         this.page,
         this.itemsPerPage,

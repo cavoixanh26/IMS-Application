@@ -137,15 +137,31 @@ namespace IMS.BusinessService.Systems
 
         public async Task<StudentResponse> GetStudentsInClass(int id, StudentRequest request)
         {
-            var classStudents = await context.ClassStudents
-                .Include(x => x.Class)
-                .Include(x => x.Students)
-                .Where(x => x.ClassId == id)
-                .ToListAsync();
+            // get all student in a class
+            var classStudents = context.ClassStudents.Where(x => x.ClassId == id);
+
+            // get student who doesn't have group
+            if (request.ExcludedHasAGroup == true)
+            {
+                classStudents = classStudents.Where(x => !x.Class.Projects
+                                                    .Any(p => p.ProjectMembers.Any(pm => pm.UserId == x.StudentId)))
+                                            .Include(x => x.Class)
+                                            .ThenInclude(x => x.Projects)
+                                            .ThenInclude(x => x.ProjectMembers)
+                                            .Include(x => x.Students);
+            }
+            else
+            {
+                classStudents = classStudents
+                    .Include(x => x.Class)
+                    .Include(x => x.Students);
+            }   
+
+            
             var students = mapper.Map<List<StudentDto>>(classStudents.Paginate(request));
             var response = new StudentResponse
             {
-                Page = GetPagingResponse(request, classStudents.Count),
+                Page = GetPagingResponse(request, classStudents.Count()),
                 Students = students
             };
             return response;
