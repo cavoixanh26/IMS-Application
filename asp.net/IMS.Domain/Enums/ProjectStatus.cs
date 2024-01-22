@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace IMS.Domain.Enums;
 
-namespace IMS.Domain.Enums
+public enum ProjectStatus
 {
-    public enum ProjectStatus
-    {
-        Active = 1, Completed = 2 ,Cancelled = 3, Proposed = 0
-    }
+    Active = 1, Completed = 2 ,Cancelled = 3, Proposed = 0
 }
