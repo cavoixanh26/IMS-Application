@@ -129,5 +129,60 @@ namespace IMS.BusinessService.Systems
 
             return projectDto;
         }
+
+        public async Task DeleteMembersFromProject(int projectId, Guid memberId)
+        {
+            var projectMembers = await context.ProjectMembers
+                .Where(x => x.ProjectId == projectId).ToListAsync();
+
+            if (projectMembers == null)
+                throw HttpException.NotFoundException("Not found");
+
+            var hasTeamLeader = false;
+            var newLeader = new ProjectMember();
+            projectMembers.ForEach(async x =>
+                {
+                    if (x.UserId == memberId)
+                    {
+                        if (x.IsTeamleader)
+                        {
+                            hasTeamLeader = true;
+                        }
+
+                        context.ProjectMembers.Remove(x);
+                        await unitOfWork.SaveChangesAsync();
+                    }
+                });
+            if (hasTeamLeader)
+            {
+                newLeader = await context.ProjectMembers
+                .FirstOrDefaultAsync(x => x.ProjectId == projectId);
+                if (newLeader != null)
+                {
+                    newLeader.IsTeamleader = true;
+                    context.Entry(newLeader).State = EntityState.Modified;
+                }
+            }
+
+            await unitOfWork.SaveChangesAsync();
+
+        }
+
+        public async Task UpdateTeamleader(int projectId, Guid memberId)
+        {
+            var projectMembers = context.ProjectMembers
+                .Where(x => x.ProjectId == projectId);
+
+            if (projectMembers == null)
+                throw HttpException.BadRequestException("Member was not existed");
+
+            await projectMembers.ForEachAsync(x =>
+            {
+                x.IsTeamleader = x.UserId == memberId;
+                context.Entry(x).State = EntityState.Modified;
+            });
+
+            await unitOfWork.SaveChangesAsync();
+        }
     }
 }

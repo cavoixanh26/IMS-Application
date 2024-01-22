@@ -60,8 +60,13 @@
       [(ngModel)]="selectedStudents"
       optionLabel="label"
       placeholder="Select Members"
-      class="text-center"
+      class="text-center mr-2"
     ></p-multiSelect>
+    <button
+      pButton
+      class="btn btn-primary"
+      label="Add member"
+    ></button>
   </div>
   <p-table [value]="members" [tableStyle]="{ 'min-width': '50rem' }">
     <ng-template pTemplate="header">
@@ -85,13 +90,14 @@
             *ngIf="member.isTeamleader == false"
             icon="pi pi-star-fill"
             class="mr-2"
+            (click) = "setTeamLeader(member.memberId)"
           ></p-button>
-          <p-button icon="pi pi-times" severity="danger"></p-button>
+          <p-button icon="pi pi-times" severity="danger" (click)="deleteMember(member.memberId)"></p-button>
         </td>
       </tr>
     </ng-template>
   </p-table>
-  <ng-template pTemplate="footer">
+  <!-- <ng-template pTemplate="footer">
     <button
       pButton
       type="submit"
@@ -99,5 +105,5 @@
       [disabled]="!form.valid"
       label="Save"
     ></button>
-  </ng-template>
+  </ng-template> -->
 </p-panel>

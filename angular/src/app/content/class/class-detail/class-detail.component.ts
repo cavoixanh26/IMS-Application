@@ -325,6 +325,7 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
       }
       if (isSuccess == false) {
         this.notificationService.showError(MessageConstants.UPDATED_FALL_MSG);
+        this.loadDataProjects();
       }
     });
   }

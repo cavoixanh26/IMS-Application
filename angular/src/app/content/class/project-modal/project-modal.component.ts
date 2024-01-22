@@ -13,13 +13,13 @@ export class ProjectModalComponent implements OnInit {
   private ngUnsubscribe = new Subject<void>();
   public form: FormGroup;
   createProjectRequest = {} as CreateProjectDto;
+  projectDto: ProjectDto;
   classId: number;
   public btnSaveName: string;
-
   public members: MemberDto[];
 
-  public studentsInClass: any[]=[];
-  public selectedStudents: any[]=[];
+  public studentsInClass: any[] = [];
+  public selectedStudents: any[] = [];
   /**
    *
    */
@@ -29,7 +29,7 @@ export class ProjectModalComponent implements OnInit {
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
     private projectService: ProjectClient,
-    public classService: ClassClient,
+    public classService: ClassClient
   ) {}
 
   ngOnInit(): void {
@@ -40,16 +40,26 @@ export class ProjectModalComponent implements OnInit {
   }
 
   loadStudentsHaveNotProjectInClass(classId: number) {
-    this.classService.studentsList(classId,true, undefined, undefined, undefined, undefined, undefined, undefined)
-    .pipe(takeUntil(this.ngUnsubscribe))
-    .subscribe((response: StudentResponse) => {
-      response.students.forEach((s) => {
-        this.studentsInClass.push({
-          label: s.email,
-          value: s.id,
+    this.classService
+      .studentsList(
+        classId,
+        true,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response: StudentResponse) => {
+        response.students.forEach((s) => {
+          this.studentsInClass.push({
+            label: s.email,
+            value: s.id,
+          });
         });
-      })
-    })
+      });
   }
 
   initFormData() {
@@ -65,6 +75,7 @@ export class ProjectModalComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.createProjectRequest = response;
+          this.projectDto = response;
           this.members = response.projectMembers;
           this.buildFormProject();
         },
@@ -130,5 +141,22 @@ export class ProjectModalComponent implements OnInit {
       ),
       classId: new FormControl(this.classId),
     });
+  }
+
+  deleteMember(memberId: string) {
+    this.projectService.memberDELETE(this.projectDto.id, memberId)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.loadDetailProject(this.projectDto.id);
+      });
+  }
+
+  setTeamLeader(memberId: string) {
+    this.projectService
+      .memberPUT(this.projectDto.id, memberId)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.loadDetailProject(this.projectDto.id);
+      });
   }
 }

@@ -98,5 +98,33 @@ namespace IMS.Api.APIControllers.Contents
                 return StatusCode((int)ex.Status, ex.Message);
             }
         }
+
+        [HttpDelete("{id}/member")]
+        public async Task<IActionResult> DeleteMemberInProject(int id, Guid memberId)
+        {
+            try
+            {
+                await service.DeleteMembersFromProject(id, memberId);
+                return Ok("Successfully");
+            }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.Status, ex.Message);
+            }
+        }
+
+        [HttpPut("{id}/member")]
+        public async Task<IActionResult> UpdateTeamleader(int id, Guid memberId)
+        {
+            try
+            {
+                await service.UpdateTeamleader(id, memberId);
+                return Ok("Successfully.");
+            }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.Status, ex.Message);
+            }
+        }
     }
 }

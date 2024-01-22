@@ -16,5 +16,7 @@ namespace IMS.Contract.Contents.Projects
         Task CreateProject(CreateProjectDto request);
         Task UpdateProject(int id, UpdateProjectDto request);
         Task<ProjectDto> AddMembersToProject(MemberInProjectRequest request);
+        Task DeleteMembersFromProject(int projectId, Guid memberId);
+        Task UpdateTeamleader(int projectId, Guid memberId);
     }
 }
