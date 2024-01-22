@@ -66,6 +66,7 @@
       pButton
       class="btn btn-primary"
       label="Add member"
+      (click)="addMembersToProject()"
     ></button>
   </div>
   <p-table [value]="members" [tableStyle]="{ 'min-width': '50rem' }">

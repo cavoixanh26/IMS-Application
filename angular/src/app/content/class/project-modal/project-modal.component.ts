@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ProjectDto, CreateProjectDto, ProjectClient, MemberDto, UserDto, ClassClient, StudentResponse } from '../../../api/api-generate';
+import { ProjectDto, CreateProjectDto, ProjectClient, MemberDto, UserDto, ClassClient, StudentResponse, MemberInProjectRequest } from '../../../api/api-generate';
 import { UtilityService } from 'src/app/shared/services/utility.service';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
@@ -159,4 +159,21 @@ export class ProjectModalComponent implements OnInit {
         this.loadDetailProject(this.projectDto.id);
       });
   }
+
+  addMembersToProject() {
+    let memberIds:MemberDto[] = [];
+    this.selectedStudents.forEach((student) => {
+      memberIds.push({memberId: student.value});
+    });
+    let addMembersToProjectRequest: MemberInProjectRequest = {
+      projectId: this.projectDto.id,
+      members: memberIds,
+    };
+    this.projectService.addMembersToProject(addMembersToProjectRequest)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.loadDetailProject(this.projectDto.id);
+      });
+  }
+  
 }

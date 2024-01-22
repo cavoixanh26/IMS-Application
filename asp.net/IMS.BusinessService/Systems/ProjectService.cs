@@ -135,12 +135,12 @@ namespace IMS.BusinessService.Systems
             var projectMembers = await context.ProjectMembers
                 .Where(x => x.ProjectId == projectId).ToListAsync();
 
-            if (projectMembers == null)
+            if (!projectMembers.Any())
                 throw HttpException.NotFoundException("Not found");
 
             var hasTeamLeader = false;
             var newLeader = new ProjectMember();
-            projectMembers.ForEach(async x =>
+            projectMembers.ForEach(x =>
                 {
                     if (x.UserId == memberId)
                     {
@@ -150,7 +150,7 @@ namespace IMS.BusinessService.Systems
                         }
 
                         context.ProjectMembers.Remove(x);
-                        await unitOfWork.SaveChangesAsync();
+                        unitOfWork.SaveChangesAsync();
                     }
                 });
             if (hasTeamLeader)
@@ -161,11 +161,9 @@ namespace IMS.BusinessService.Systems
                 {
                     newLeader.IsTeamleader = true;
                     context.Entry(newLeader).State = EntityState.Modified;
+                    await unitOfWork.SaveChangesAsync();
                 }
             }
-
-            await unitOfWork.SaveChangesAsync();
-
         }
 
         public async Task UpdateTeamleader(int projectId, Guid memberId)
