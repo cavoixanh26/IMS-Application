@@ -11,6 +11,8 @@ namespace IMS.Contract.Contents.Milestones
 {
     public interface IMilestoneService : IGenericRepository<Milestone>
     {
-        Task<MilestoneResponse> GetMilestone(MilestoneRequest request);
+        Task<MilestoneResponse> GetMilestones(MilestoneRequest request);
+        Task<MilestoneDto> GetMilestoneById(int id);
+        Task CreateMilestone(CreateMilestoneDto request);
     }
 }

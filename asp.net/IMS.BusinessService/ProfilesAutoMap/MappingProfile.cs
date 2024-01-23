@@ -44,9 +44,12 @@ public class MappingProfile : Profile
 		CreateMap<CreateUpdateSetting, Setting>().ReverseMap();
 
 		// milestone
-		CreateMap<MilestoneDto , Milestone>().ReverseMap();	
-		CreateMap<CreateMilestoneDto , Milestone>().ReverseMap();
-		CreateMap<UpdateMilestoneDto , Milestone>().ReverseMap();
+		CreateMap<Milestone, MilestoneDto>()
+			.ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project != null ? src.Project.Name : null))
+			.ForMember(dest => dest.ClassName, opt => opt.MapFrom(src => src.Class != null ? src.Class.Name : null))
+			.ReverseMap();	
+		CreateMap<Milestone, CreateMilestoneDto>().ReverseMap();
+		CreateMap<Milestone, UpdateMilestoneDto>().ReverseMap();
 
         //Project 
         CreateMap<Project, CreateProjectDto>().ReverseMap();

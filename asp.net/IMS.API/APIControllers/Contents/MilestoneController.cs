@@ -3,7 +3,10 @@ using IMS.Contract.Common.UnitOfWorks;
 using IMS.Contract.Contents.Assignments;
 using IMS.Contract.Contents.Milestones;
 using IMS.Domain.Contents;
+using IMS.Domain.Systems;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
@@ -11,78 +14,48 @@ namespace IMS.Api.APIControllers.Contents
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MilestoneController : ControllerBase
+    [Authorize]
+    public class MilestoneController : BaseController<IMilestoneService>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public readonly IMilestoneService _milestoneService;
-        public readonly IMapper _mapper;
-
-        public MilestoneController(IUnitOfWork unitOfWork, IMilestoneService milestoneService, IMapper mapper)
+        public MilestoneController(
+            IMilestoneService service, 
+            UserManager<AppUser> userManager
+            )
+            :base(service, userManager)
         {
-            _unitOfWork = unitOfWork;
-            _milestoneService = milestoneService;
-            _mapper = mapper;
         }
 
-        [HttpGet("milestone")]
+        [HttpGet()]
         public async Task<ActionResult<MilestoneResponse>> GetAllMilestone([FromQuery] MilestoneRequest request)
         {
-            var data = await _milestoneService.GetMilestone(request);
-            return Ok(data);
+            var response = await service.GetMilestones(request);
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<MilestoneDto>> GetMilestoneId(int id)
         {
-            try
-            {
-                var data = await _milestoneService.GetWithDetails(x => x.Id == id, x => x.Class, x => x.Project);
-                var result = _mapper.Map<MilestoneDto>(data);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var response = await service.GetMilestoneById(id);
+            return Ok(response);
         }
 
-        [HttpDelete("delete-milestone/{id}")]
-        public async Task<IActionResult> DeleteMilestone(int id)
-        {
-            var data = await _milestoneService.GetById(id);
-            if (data != null)
-            {
-                await _milestoneService.DeleteAsync(data);
-                await _unitOfWork.SaveChangesAsync();
-                return Ok("Delete successfully !!!");
-            }
-            else
-            {
-                return BadRequest("Delete Fail !!!");
-            }
-        }
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteMilestone(int id)
+        //{
+
+        //}
 
         [HttpPost]
-        public async Task<IActionResult> CreateMilestone([FromBody] CreateMilestoneDto data)
+        public async Task<IActionResult> CreateMilestone([FromBody] CreateMilestoneDto request)
         {
-            var map = _mapper.Map<Milestone>(data);
-            var result = await _milestoneService.InsertAsync(map);
-            await _unitOfWork.SaveChangesAsync();
-            return Ok("Add Successfully !!!");
+            await service.CreateMilestone(request);
+            return Ok("Successfully");
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMilestone(int id, [FromBody] UpdateMilestoneDto data)
-        {
-            var input = await _milestoneService.GetById(id);
-            if (input != null)
-            {
-                var map = _mapper.Map(data, input);
-                var result = await _milestoneService.UpdateAsync(map);
-                await _unitOfWork.SaveChangesAsync();
-                return Ok("Update Successfully !!!!");
-            }
-            else { return BadRequest("Update Fail !!!"); }
-        }
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdateMilestone(int id, [FromBody] UpdateMilestoneDto data)
+        //{
+
+        //}
     }
 }

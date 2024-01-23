@@ -13,5 +13,6 @@ namespace IMS.Contract.Contents.Milestones
         public DateTime? DueDate { get; set; }
         public int? ProjectId { get; set; }
         public int? ClassId { get; set; }
+        public string Title { get; set; }
     }
 }
