@@ -1,14 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MenuItem, SelectItem } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
-import { AddStudentInClassRequest, ClassClient, ClassDto, FileParameter, ProjectClient, ProjectDto, ProjectResponse, StudentDto, StudentResponse, UserClient, UserDto, UserResponse } from 'src/app/api/api-generate';
+import { AddStudentInClassRequest, ClassClient, ClassDto, FileParameter, MileStoneStatus, MilestoneClient, MilestoneDto, ProjectClient, ProjectDto, ProjectResponse, StudentDto, StudentResponse, UserClient, UserDto, UserResponse } from 'src/app/api/api-generate';
 import { MessageConstants } from 'src/app/shared/constants/message.const';
 import { FileService } from 'src/app/shared/services/file.service';
 import { NotificationService } from 'src/app/shared/services/notification.service';
 import { UtilityService } from 'src/app/shared/services/utility.service';
 import { ProjectModalComponent } from '../project-modal/project-modal.component';
+import { ProjectStatus } from '../../../api/api-generate';
 
 @Component({
   selector: 'app-class-detail',
@@ -45,6 +46,12 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
 
   public projectStatus: any;
 
+  //milestone
+  sortOptionsMilestone!: SelectItem[];
+  sortOrderMilestone!: number;
+  sortKeyMilestone: any;
+  milestones: MilestoneDto[];
+
   constructor(
     private activatedRoute: ActivatedRoute,
     public dialogService: DialogService,
@@ -55,7 +62,8 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     private utilService: UtilityService,
     private projectService: ProjectClient,
-    private fileService: FileService
+    private fileService: FileService,
+    private milestoneService: MilestoneClient
   ) {}
 
   ngOnInit() {
@@ -64,8 +72,49 @@ export class ClassDetailComponent implements OnInit, OnDestroy {
     this.loadStudentList();
     this.loadDataProjects();
     this.loadStudents();
+    this.loadMilestonesInProject(1);
+  }
 
-    
+  loadMilestonesInProject(projectId: number) {
+    this.milestoneService
+      .milestoneGET(
+        projectId,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe({
+        next: (response) => {
+          this.milestones = response.milestones;
+          console.log(response);
+        },
+        error: () => {
+          console.log('error');
+        },
+      });
+  }
+  getSeverity(milestone: MilestoneDto) {
+    switch (milestone.status) {
+      case MileStoneStatus._0:
+        return 'success';
+      case MileStoneStatus._1:
+        return 'warning';
+      case MileStoneStatus._2:
+        return 'danger';
+      case MileStoneStatus._3:
+        return 'danger';
+      default:
+        return null;
+    }
   }
 
   loadDetailClass(id: number) {

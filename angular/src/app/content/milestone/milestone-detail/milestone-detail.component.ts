@@ -73,23 +73,23 @@ export class MilestoneDetailComponent implements OnInit, OnDestroy {
   }
 
   loadFormDetails(id: number) {
-    this.isUpdating = true;
-    this.toggleBlockUI(true);
-    this.milestoneService
-      .milestoneGET(id)
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe({
-        next: (response: MilestoneDto) => {
-          this.selectedEntity = response;
-          this.buildForm();
-          this.loadProjects();
-          this.loadClasses();
-          this.toggleBlockUI(false);
-        },
-        error: () => {
-          this.toggleBlockUI(false);
-        },
-      });
+    // this.isUpdating = true;
+    // this.toggleBlockUI(true);
+    // this.milestoneService
+    //   .milestoneGET(id)
+    //   .pipe(takeUntil(this.ngUnsubscribe))
+    //   .subscribe({
+    //     next: (response: MilestoneDto) => {
+    //       this.selectedEntity = response;
+    //       this.buildForm();
+    //       this.loadProjects();
+    //       this.loadClasses();
+    //       this.toggleBlockUI(false);
+    //     },
+    //     error: () => {
+    //       this.toggleBlockUI(false);
+    //     },
+    //   });
   }
 
   buildForm() {
@@ -119,13 +119,13 @@ export class MilestoneDetailComponent implements OnInit, OnDestroy {
           this.toggleBlockUI(false);
         });
     } else {
-      this.milestoneService
-        .milestonePUT(this.config.data.id, this.form.value)
-        .pipe(takeUntil(this.ngUnsubscribe))
-        .subscribe(() => {
-          this.toggleBlockUI(false);
-          this.ref.close(this.form.value);
-        });
+      // this.milestoneService
+      //   .milestonePUT(this.config.data.id, this.form.value)
+      //   .pipe(takeUntil(this.ngUnsubscribe))
+      //   .subscribe(() => {
+      //     this.toggleBlockUI(false);
+      //     this.ref.close(this.form.value);
+      //   });
     }
   }
 

@@ -174,24 +174,24 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
   }
 
   loadMileStone() {
-    this.milestoneService
-      .milestone(
-        undefined,
-        undefined,
-        this.keyWords,
-        this.page,
-        this.itemsPerPage,
-        this.skip,
-        this.take,
-        this.sortField
-      )
-      .subscribe((response: MilestoneResponse) => {
-        response.milestones.forEach((s) => {
-          this.milestoneList.push({
-            label: s.description,
-            value: s.id,
-          });
-        });
-      });
+    // this.milestoneService
+    //   .milestone(
+    //     undefined,
+    //     undefined,
+    //     this.keyWords,
+    //     this.page,
+    //     this.itemsPerPage,
+    //     this.skip,
+    //     this.take,
+    //     this.sortField
+    //   )
+    //   .subscribe((response: MilestoneResponse) => {
+    //     response.milestones.forEach((s) => {
+    //       this.milestoneList.push({
+    //         label: s.description,
+    //         value: s.id,
+    //       });
+    //     });
+    //   });
   }
 }

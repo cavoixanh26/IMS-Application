@@ -53,29 +53,29 @@ export class MilestoneComponent implements OnInit, OnDestroy {
   }
 
   loadData(selectionId = null) {
-    this.toggleBlockUI(true);
-    this.milestoneService
-      .milestone(
-        this.projectId,
-        this.classId,
-        this.keyWords,
-        this.page,
-        this.itemsPerPage,
-        this.skip,
-        this.take,
-        this.sortField
-      )
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe({
-        next: (response: MilestoneResponse) => {
-          this.items = response.milestones;
-          this.totalCount = response.page.toTalRecord;
-          this.toggleBlockUI(false);
-        },
-        error: () => {
-          this.toggleBlockUI(true);
-        },
-      });
+    // this.toggleBlockUI(true);
+    // this.milestoneService
+    //   .milestone(
+    //     this.projectId,
+    //     this.classId,
+    //     this.keyWords,
+    //     this.page,
+    //     this.itemsPerPage,
+    //     this.skip,
+    //     this.take,
+    //     this.sortField
+    //   )
+    //   .pipe(takeUntil(this.ngUnsubscribe))
+    //   .subscribe({
+    //     next: (response: MilestoneResponse) => {
+    //       this.items = response.milestones;
+    //       this.totalCount = response.page.toTalRecord;
+    //       this.toggleBlockUI(false);
+    //     },
+    //     error: () => {
+    //       this.toggleBlockUI(true);
+    //     },
+    //   });
   }
   handleProjectChange(newValue) {
     if (newValue === null) {
@@ -164,24 +164,24 @@ export class MilestoneComponent implements OnInit, OnDestroy {
   }
 
   deleteItem(id: number) {
-    this.confirmationService.confirm({
-      message: MessageConstants.CONFIRM_DELETE_MSG,
-      accept: () => {
-        this.toggleBlockUI(true);
-        this.milestoneService.deleteMilestone(id).subscribe({
-          next: () => {
-            this.notificationService.showSuccess(
-              MessageConstants.DELETED_OK_MSG
-            );
-            this.loadData();
-            this.toggleBlockUI(false);
-          },
-          error: () => {
-            this.toggleBlockUI(false);
-          },
-        });
-      },
-    });
+    // this.confirmationService.confirm({
+    //   message: MessageConstants.CONFIRM_DELETE_MSG,
+    //   accept: () => {
+    //     this.toggleBlockUI(true);
+    //     this.milestoneService.deleteMilestone(id).subscribe({
+    //       next: () => {
+    //         this.notificationService.showSuccess(
+    //           MessageConstants.DELETED_OK_MSG
+    //         );
+    //         this.loadData();
+    //         this.toggleBlockUI(false);
+    //       },
+    //       error: () => {
+    //         this.toggleBlockUI(false);
+    //       },
+    //     });
+    //   },
+    // });
   }
 
   pageChanged(event: any) {
