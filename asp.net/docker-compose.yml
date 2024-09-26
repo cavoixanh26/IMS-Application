@@ -1,0 +1,30 @@
+
+services:
+  imsdb:
+    container_name: ims-db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - 8002:1433 
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Password@12345
+    networks:
+      - imsappnetwork
+  ims.api:
+    container_name: ims-api-app
+    image: ${DOCKER_REGISTRY-}imsapi
+    build:
+      context: .
+      dockerfile: IMS.API/Dockerfile
+    ports:
+      - 8001:80
+      - 8005:443
+    depends_on: 
+      - imsdb
+    networks:
+      - imsappnetwork
+    entrypoint: ["dockerize", "-wait", "tcp://ims-db:1433", "-timeout", "60s", "dotnet", "IMS.Api.dll"]
+  
+networks:
+  imsappnetwork:
+    driver: bridge

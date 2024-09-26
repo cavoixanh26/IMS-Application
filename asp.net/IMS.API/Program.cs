@@ -3,6 +3,8 @@
 using IMS.BusinessService;
 using IMS.BusinessService.Common;
 using IMS.Infrastructure;
+using IMS.Infrastructure.EnityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
@@ -92,6 +94,12 @@ namespace IMS.Api
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<IMSDbContext>();
+                dbContext.Database.Migrate();
+            }
 
             if (app.Environment.IsDevelopment())
             {
