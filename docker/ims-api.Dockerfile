@@ -8,11 +8,12 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["IMS.API/IMS.Api.csproj", "IMS.API/"]
-COPY ["IMS.BusinessService/IMS.BusinessService.csproj", "IMS.BusinessService/"]
-COPY ["IMS.Contract/IMS.Contract.csproj", "IMS.Contract/"]
-COPY ["IMS.Domain/IMS.Domain.csproj", "IMS.Domain/"]
-COPY ["IMS.Infrastructure/IMS.Infrastructure.csproj", "IMS.Infrastructure/"]
+COPY asp.net/IMS.API/IMS.Api.csproj IMS.API/
+COPY asp.net/IMS.BusinessService/IMS.BusinessService.csproj IMS.BusinessService/
+COPY asp.net/IMS.Contract/IMS.Contract.csproj IMS.Contract/
+COPY asp.net/IMS.Domain/IMS.Domain.csproj IMS.Domain/
+COPY asp.net/IMS.Infrastructure/IMS.Infrastructure.csproj IMS.Infrastructure/
+
 RUN dotnet restore "./IMS.API/IMS.Api.csproj"
 
 # Install dockerize in the build stage
@@ -21,7 +22,7 @@ RUN apt-get update && apt-get install -y wget \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
     && rm dockerize-linux-amd64-v0.6.1.tar.gz
 
-COPY . .
+COPY asp.net/. .
 WORKDIR "/src/IMS.API"
 RUN dotnet build "./IMS.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
@@ -29,6 +30,7 @@ RUN dotnet build "./IMS.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./IMS.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN ls -la /app/publish
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final

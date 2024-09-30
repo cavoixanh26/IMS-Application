@@ -32,7 +32,7 @@ namespace IMS.Api
             {
                 builder.AllowAnyMethod()
                     .AllowAnyHeader()
-                    .WithOrigins(configuration["AllowedOrigins"])
+                    .WithOrigins()
                     .AllowCredentials();
             }));
             builder.Services.ConfigureSettingServices(configuration);

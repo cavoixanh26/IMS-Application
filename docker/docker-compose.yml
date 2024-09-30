@@ -1,4 +1,4 @@
-
+name: ims
 services:
   imsdb:
     container_name: ims-db
@@ -14,11 +14,11 @@ services:
     container_name: ims-api-app
     image: ${DOCKER_REGISTRY-}imsapi
     build:
-      context: ../asp.net
-      dockerfile: ../docker/ims-api.Dockerfile
+      context: ../ 
+      dockerfile: docker/ims-api.Dockerfile
     ports:
-      - 8001:80
-      - 8005:443
+      - "8000:80"
+      - "8001:443"
     depends_on: 
       - imsdb
     networks:
